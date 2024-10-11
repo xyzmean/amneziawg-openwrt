@@ -61,7 +61,6 @@ jobs:
         with:
           path: openwrt
           repository: openwrt/openwrt
-          ref: v${{ matrix.build_env.tag }}
           fetch-depth: 0
 
       - name: Restore cached tools and kernel
