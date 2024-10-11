@@ -14,7 +14,8 @@ OPENWRT_TARGET    ?= mediatek
 OPENWRT_SUBTARGET ?= filogic
 OPENWRT_VERMAGIC  ?= any
 
-GITHUB_SHA        ?= $(shell git rev-parse --short HEAD)
+#GITHUB_SHA        ?= $(shell git rev-parse --short HEAD)
+GITHUB_SHA        ?= 2bbbeaa36af92ac3cd8da5f3970d89b2c1f34dc4
 VERSION_STR       ?= $(shell git describe --tags --long --dirty)
 POSTFIX           := $(VERSION_STR)_$(OPENWRT_RELEASE)_$(OPENWRT_ARCH)_$(OPENWRT_TARGET)_$(OPENWRT_SUBTARGET)
 POSTFIX_RELEASE   := $(GITHUB_REF_NAME)_$(OPENWRT_RELEASE)_$(OPENWRT_ARCH)_$(OPENWRT_TARGET)_$(OPENWRT_SUBTARGET)
@@ -60,7 +61,7 @@ SHOW_ENV_VARS = \
 	OPENWRT_SRCDIR \
 	AMNEZIAWG_SRCDIR \
 	AMNEZIAWG_DSTDIR \
-	GITHUB_SHA \
+	 \
 	VERSION_STR \
 	POSTFIX \
 	GITHUB_REF_TYPE \
