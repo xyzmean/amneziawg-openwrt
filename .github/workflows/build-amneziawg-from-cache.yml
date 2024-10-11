@@ -56,11 +56,21 @@ jobs:
           path: amneziawg-openwrt
           fetch-depth: 0
 
-      - name: Checkout openwrt
+      - name: Checkout OpenWrt snapsots repository
         uses: actions/checkout@v4
+        if: ${{ matrix.build_env.tag == 'SNAPSHOT' }}
         with:
           path: openwrt
           repository: openwrt/openwrt
+          fetch-depth: 0
+      
+      - name: Checkout OpenWrt regular repository
+        uses: actions/checkout@v4
+        if: ${{ matrix.build_env.tag != 'SNAPSHOT' }}
+        with:
+          path: openwrt
+          repository: openwrt/openwrt
+          ref: v${{ matrix.build_env.tag }}
           fetch-depth: 0
 
       - name: Restore cached tools and kernel
@@ -96,5 +106,5 @@ jobs:
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: amneziawg-${{ steps.build-amneziawg.outputs.version_str }}_v${{ matrix.build_env.tag }}_${{ matrix.build_env.pkgarch}}_${{ matrix.build_env.target}}_${{ matrix.build_env.subtarget}}
+          name: amneziawg-${{ matrix.build_env.tag }}_${{ matrix.build_env.pkgarch}}_${{ matrix.build_env.target}}_${{ matrix.build_env.subtarget}}_${{ steps.build-amneziawg.outputs.vermagic }}
           path: awgrelease/*
