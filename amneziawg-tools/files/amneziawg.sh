@@ -92,7 +92,7 @@ proto_amneziawg_setup_peer() {
 	if [ "${preshared_key}" ]; then
 		echo "PresharedKey=${preshared_key}" >> "${wg_cfg}"
 	fi
-	for allowed_ip in $allowed_ips; do
+	for allowed_ip in ${allowed_ips}; do
 		echo "AllowedIPs=${allowed_ip}" >> "${wg_cfg}"
 	done
 	if [ "${endpoint_host}" ]; then
