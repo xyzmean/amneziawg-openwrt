@@ -107,7 +107,7 @@ jobs:
           make package/kmod-amneziawg/compile V=s || true
 
           make package/luci-proto-amneziawg/{clean,download,prepare}
-          make package/luci-proto-amneziawg/compile V=s
+          make package/luci-proto-amneziawg/compile V=sc
 
           make V=s package/amneziawg-tools/{clean,download,prepare}
           make V=s package/amneziawg-tools/compile
