@@ -1,4 +1,4 @@
-name: build module artifacts
+name: Build AmneziaWG from cache
 
 on:
   workflow_dispatch:
