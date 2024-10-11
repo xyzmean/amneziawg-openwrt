@@ -397,15 +397,15 @@ return network.registerProtocol('amneziawg', {
 					s.getOption('public_key').getUIElement(s.section).setValue(keypair.pub);
 					s.getOption('listen_port').getUIElement(s.section).setValue(config.interface_listenport || '');
 					s.getOption('addresses').getUIElement(s.section).setValue(config.interface_address);
-                    s.getOption('awg_jc').getUIElement(s.section).setValue(config.awg_jc);
-                    s.getOption('awg_jmin').getUIElement(s.section).setValue(config.awg_jmin);
-                    s.getOption('awg_jmax').getUIElement(s.section).setValue(config.awg_jmax);
-                    s.getOption('awg_s1').getUIElement(s.section).setValue(config.awg_s1);
-                    s.getOption('awg_s2').getUIElement(s.section).setValue(config.awg_s2);
-                    s.getOption('awg_h1').getUIElement(s.section).setValue(config.awg_h1);
-                    s.getOption('awg_h2').getUIElement(s.section).setValue(config.awg_h2);
-                    s.getOption('awg_h3').getUIElement(s.section).setValue(config.awg_h3);
-                    s.getOption('awg_h4').getUIElement(s.section).setValue(config.awg_h4);
+					s.getOption('awg_jc').getUIElement(s.section).setValue(config.awg_jc);
+					s.getOption('awg_jmin').getUIElement(s.section).setValue(config.awg_jmin);
+					s.getOption('awg_jmax').getUIElement(s.section).setValue(config.awg_jmax);
+					s.getOption('awg_s1').getUIElement(s.section).setValue(config.awg_s1);
+					s.getOption('awg_s2').getUIElement(s.section).setValue(config.awg_s2);
+					s.getOption('awg_h1').getUIElement(s.section).setValue(config.awg_h1);
+					s.getOption('awg_h2').getUIElement(s.section).setValue(config.awg_h2);
+					s.getOption('awg_h3').getUIElement(s.section).setValue(config.awg_h3);
+					s.getOption('awg_h4').getUIElement(s.section).setValue(config.awg_h4);
 
 					if (config.interface_dns)
 						s.getOption('dns').getUIElement(s.section).setValue(config.interface_dns);
@@ -738,20 +738,20 @@ return network.registerProtocol('amneziawg', {
 
 		o.createPeerConfig = function(section_id, endpoint, ips, eips, dns) {
 			var pub = s.formvalue(s.section, 'public_key'),
-			    port = s.formvalue(s.section, 'listen_port') || '51820',
-                jc = s.formvalue(s.section, 'awg_jc'),
-                jmin = s.formvalue(s.section, 'awg_jmin'),
-                jmax = s.formvalue(s.section, 'awg_jmax'),
-                s1 = s.formvalue(s.section, 'awg_s1'),
-                s2 = s.formvalue(s.section, 'awg_s2'),
-                h1 = s.formvalue(s.section, 'awg_h1'),
-                h2 = s.formvalue(s.section, 'awg_h2'),
-                h3 = s.formvalue(s.section, 'awg_h3'),
-                h4 = s.formvalue(s.section, 'awg_h4'),
-			    prv = this.section.formvalue(section_id, 'private_key'),
-			    psk = this.section.formvalue(section_id, 'preshared_key'),
-			    eport = this.section.formvalue(section_id, 'endpoint_port'),
-			    keep = this.section.formvalue(section_id, 'persistent_keepalive');
+				port = s.formvalue(s.section, 'listen_port') || '51820',
+				jc = s.formvalue(s.section, 'awg_jc'),
+				jmin = s.formvalue(s.section, 'awg_jmin'),
+				jmax = s.formvalue(s.section, 'awg_jmax'),
+				s1 = s.formvalue(s.section, 'awg_s1'),
+				s2 = s.formvalue(s.section, 'awg_s2'),
+				h1 = s.formvalue(s.section, 'awg_h1'),
+				h2 = s.formvalue(s.section, 'awg_h2'),
+				h3 = s.formvalue(s.section, 'awg_h3'),
+				h4 = s.formvalue(s.section, 'awg_h4'),
+				prv = this.section.formvalue(section_id, 'private_key'),
+				psk = this.section.formvalue(section_id, 'preshared_key'),
+				eport = this.section.formvalue(section_id, 'endpoint_port'),
+				keep = this.section.formvalue(section_id, 'persistent_keepalive');
 
 			// If endpoint is IPv6 we must escape it with []
 			if (endpoint.indexOf(':') > 0) {
@@ -764,15 +764,15 @@ return network.registerProtocol('amneziawg', {
 				eips && eips.length ? 'Address = ' + eips.join(', ') : '# Address not defined',
 				eport ? 'ListenPort = ' + eport : '# ListenPort not defined',
 				dns && dns.length ? 'DNS = ' + dns.join(', ') : '# DNS not defined',
-				jc && jc.length ? 'Jc = ' jc.join(', ') : '# Jc not defined',
-				jmin && jmin.length ? 'Jmin = ' jmin.join(', ') : '# Jmin not defined',
-				jmax && jmax.length ? 'Jmax = ' jmax.join(', ') : '# Jmax not defined',
-				s1 && s1.length ? 'S1 = ' s1.join(', ') : '# S1 not defined',
-				s2 && s2.length ? 'S2 = ' s2.join(', ') : '# S2 not defined',
-				h1 && h1.length ? 'H1 = ' h1.join(', ') : '# H1 not defined',
-				h2 && h2.length ? 'H2 = ' h2.join(', ') : '# H2 not defined',
-				h3 && h3.length ? 'H3 = ' h3.join(', ') : '# H3 not defined',
-				h4 && h4.length ? 'H4 = ' h4.join(', ') : '# H4 not defined',
+				jc && jc.length ? 'Jc = ' + jc.join(', ') : '# Jc not defined',
+				jmin && jmin.length ? 'Jmin = ' + jmin.join(', ') : '# Jmin not defined',
+				jmax && jmax.length ? 'Jmax = ' + jmax.join(', ') : '# Jmax not defined',
+				s1 && s1.length ? 'S1 = ' + s1.join(', ') : '# S1 not defined',
+				s2 && s2.length ? 'S2 = ' + s2.join(', ') : '# S2 not defined',
+				h1 && h1.length ? 'H1 = ' + h1.join(', ') : '# H1 not defined',
+				h2 && h2.length ? 'H2 = ' + h2.join(', ') : '# H2 not defined',
+				h3 && h3.length ? 'H3 = ' + h3.join(', ') : '# H3 not defined',
+				h4 && h4.length ? 'H4 = ' + h4.join(', ') : '# H4 not defined',
 				'',
 				'[Peer]',
 				'PublicKey = ' + pub,
