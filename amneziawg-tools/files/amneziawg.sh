@@ -87,13 +87,13 @@ proto_amneziawg_setup_peer() {
 		return 0
 	fi
 
-	echo "[Peer]" >> "${wg_cfg}"
-	echo "PublicKey=${public_key}" >> "${wg_cfg}"
+	echo "[Peer]" >> "${awg_cfg}"
+	echo "PublicKey=${public_key}" >> "${awg_cfg}"
 	if [ "${preshared_key}" ]; then
-		echo "PresharedKey=${preshared_key}" >> "${wg_cfg}"
+		echo "PresharedKey=${preshared_key}" >> "${awg_cfg}"
 	fi
 	for allowed_ip in ${allowed_ips}; do
-		echo "AllowedIPs=${allowed_ip}" >> "${wg_cfg}"
+		echo "AllowedIPs=${allowed_ip}" >> "${awg_cfg}"
 	done
 	if [ "${endpoint_host}" ]; then
 		case "${endpoint_host}" in
@@ -109,10 +109,10 @@ proto_amneziawg_setup_peer() {
 		else
 			endpoint="${endpoint}:51820"
 		fi
-		echo "Endpoint=${endpoint}" >> "${wg_cfg}"
+		echo "Endpoint=${endpoint}" >> "${awg_cfg}"
 	fi
 	if [ "${persistent_keepalive}" ]; then
-		echo "PersistentKeepalive=${persistent_keepalive}" >> "${wg_cfg}"
+		echo "PersistentKeepalive=${persistent_keepalive}" >> "${awg_cfg}"
 	fi
 
 	if [ ${route_allowed_ips} -ne 0 ]; then
