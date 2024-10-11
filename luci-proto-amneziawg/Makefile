@@ -6,15 +6,14 @@
 
 include $(TOPDIR)/rules.mk
 
-PKG_MAINTAINER:=Amnezia Admin <admin@amnezia.org>
+LUCI_TITLE:=Support for AmneziaWG VPN
+LUCI_DESCRIPTION:=Provides support and Web UI for AmneziaWG
 PKG_VERSION:=0.0.1-1
-LUCI_TITLE:=AmneziaWG Web UI
-LUCI_DESCRIPTION:=Provides Web UI for AmneziaWG
-LUCI_DEPENDS:=+luci-base +amneziawg-tools +ucode
+LUCI_DEPENDS:=+amneziawg-tools +ucode +luci-lib-uqr
 LUCI_PKGARCH:=all
 
-PKG_PROVIDES:=luci-proto-amneziawg
+PKG_LICENSE:=Apache-2.0
 
-include $(TOPDIR)/feeds/luci/luci.mk
+include ../../luci.mk
 
 # call BuildPackage - OpenWrt buildroot signature
