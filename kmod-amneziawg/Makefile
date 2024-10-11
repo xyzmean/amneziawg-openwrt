@@ -10,11 +10,9 @@ include $(INCLUDE_DIR)/package.mk
 
 define KernelPackage/amneziawg
 	SECTION:=kernel
-	CATEGORY:=Kernel Modules
+	CATEGORY:=Kernel modules
 	SUBMENU:=Network Support
-	URL:=https://amnezia.org/
-	MAINTAINER:=Amnezia Admin <admin@amnezia.org>
-	TITLE:=AmneziaWG Kernel Module
+	TITLE:=AmneziaWG VPN Kernel Module
 	FILES:=$(PKG_BUILD_DIR)/amneziawg.ko
 	DEPENDS:= \
 		+kmod-udptunnel4 \
