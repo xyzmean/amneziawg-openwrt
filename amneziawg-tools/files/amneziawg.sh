@@ -115,7 +115,7 @@ proto_amneziawg_setup_peer() {
 		echo "PersistentKeepalive=${persistent_keepalive}" >> "${wg_cfg}"
 	fi
 
-	if [ "${route_allowed_ips}" -ne 0 ]; then
+	if [ ${route_allowed_ips} -ne 0 ]; then
 		for allowed_ip in ${allowed_ips}; do
 			case "${allowed_ip}" in
 				*:*/*)
@@ -139,7 +139,7 @@ ensure_key_is_generated() {
 	local private_key
 	private_key="$(uci get network."$1".private_key)"
 
-	if [ "$private_key" = "generate" ]; then
+	if [ "$private_key" == "generate" ]; then
 		local ucitmp
 		oldmask="$(umask)"
 		umask 077
@@ -308,7 +308,7 @@ proto_amneziawg_teardown() {
 	if proto_amneziawg_is_kernel_mode; then
 		ip link del dev "${config}" >/dev/null 2>&1
 	else
-		rm -f "/var/run/amneziawg/${config}.sock"
+		rm -f "/var/run/wireguard/${config}.sock"
 	fi
 }
 
