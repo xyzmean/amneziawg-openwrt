@@ -8,11 +8,10 @@ OPENWRT_SRCDIR   ?= $(UPPERDIR)/openwrt
 AMNEZIAWG_SRCDIR ?= $(TOPDIR)
 AMNEZIAWG_DSTDIR ?= $(UPPERDIR)/awgrelease
 
-OPENWRT_RELEASE   ?= 23.05.3
-OPENWRT_ARCH      ?= mips_24kc
-OPENWRT_TARGET    ?= ath79
-OPENWRT_SUBTARGET ?= generic
-#OPENWRT_VERMAGIC  ?= 34a8cffa541c94af8232fe9af7a1f5ba
+OPENWRT_RELEASE   ?= SNAPSHOT
+OPENWRT_ARCH      ?= aarch64_cortex-a53
+OPENWRT_TARGET    ?= mediatek
+OPENWRT_SUBTARGET ?= filogic
 OPENWRT_VERMAGIC  ?= any
 
 GITHUB_SHA        ?= $(shell git rev-parse --short HEAD)
@@ -22,22 +21,32 @@ POSTFIX_RELEASE   := $(GITHUB_REF_NAME)_$(OPENWRT_RELEASE)_$(OPENWRT_ARCH)_$(OPE
 
 WORKFLOW_REF      ?= $(shell git rev-parse --abbrev-ref HEAD)
 
-OPENWRT_ROOT_URL  ?= https://downloads.openwrt.org/snapshots
-OPENWRT_BASE_URL  ?= $(OPENWRT_ROOT_URL)/targets/$(OPENWRT_TARGET)/$(OPENWRT_SUBTARGET)
-OPENWRT_MANIFEST  ?= $(OPENWRT_BASE_URL)/openwrt-$(OPENWRT_TARGET)-$(OPENWRT_SUBTARGET).manifest
-
 NPROC ?= $(shell getconf _NPROCESSORS_ONLN)
 
 ifndef OPENWRT_VERMAGIC
-_NEED_VERMAGIC=1
+	_NEED_VERMAGIC=1
 endif
 
 ifeq ($(OPENWRT_VERMAGIC), auto)
-_NEED_VERMAGIC=1
+	_NEED_VERMAGIC=1
 endif
 
-ifeq ($(_NEED_VERMAGIC), 1)
-OPENWRT_VERMAGIC := $(shell curl -fs $(OPENWRT_MANIFEST) | grep -- "^kernel" | sed -e "s,.*\-,,")
+ifeq ($(OPENWRT_RELEASE), SNAPSHOT)
+	OPENWRT_ROOT_URL := https://downloads.openwrt.org/snapshots
+	OPENWRT_BASE_URL := $(OPENWRT_ROOT_URL)/targets/$(OPENWRT_TARGET)/$(OPENWRT_SUBTARGET)
+	OPENWRT_MANIFEST := $(OPENWRT_BASE_URL)/openwrt-$(OPENWRT_TARGET)-$(OPENWRT_SUBTARGET).manifest
+	GIT_BRANCH := master
+	ifeq ($(_NEED_VERMAGIC), 1)
+		OPENWRT_VERMAGIC := $(shell curl -fs $(OPENWRT_MANIFEST) | grep -- "^kernel" | sed -e "s/.*~//;s/-.*//")
+	endif
+else
+	OPENWRT_ROOT_URL := https://downloads.openwrt.org/releases
+	OPENWRT_BASE_URL := $(OPENWRT_ROOT_URL)/$(OPENWRT_RELEASE)/targets/$(OPENWRT_TARGET)/$(OPENWRT_SUBTARGET)
+	OPENWRT_MANIFEST := $(OPENWRT_BASE_URL)/openwrt-$(OPENWRT_RELEASE)-$(OPENWRT_TARGET)-$(OPENWRT_SUBTARGET).manifest
+	GIT_BRANCH := v$(OPENWRT_RELEASE)
+	ifeq ($(_NEED_VERMAGIC), 1)
+		OPENWRT_VERMAGIC := $(shell curl -fs $(OPENWRT_MANIFEST) | grep -- "^kernel" | sed -e "s,.*\-,,")
+	endif
 endif
 
 help: ## Show help message (list targets)
@@ -115,7 +124,7 @@ $(OPENWRT_SRCDIR):
 	set -ex ; \
 	git clone https://github.com/openwrt/openwrt.git $@ ; \
 	cd $@ ; \
-	git checkout v$(OPENWRT_RELEASE) ; \
+	git checkout $(GIT_BRANCH) ; \
 	}
 
 $(OPENWRT_SRCDIR)/feeds.conf: | $(OPENWRT_SRCDIR)
