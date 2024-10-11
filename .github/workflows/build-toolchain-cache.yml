@@ -1,4 +1,4 @@
-name: Build toolchain for snapshots
+name: Build OpenWrt toolchain cache
 
 on:
   workflow_dispatch:
@@ -31,7 +31,7 @@ on:
 
 jobs:
   build:
-    name: "Build toolchain for OpenWrt: ${{ matrix.build_env.tag }} - ${{ matrix.build_env.pkgarch }} :: ${{ matrix.build_env.target }}/${{ matrix.build_env.subtarget }}"
+    name: "Build toolchain cache for OpenWrt: ${{ matrix.build_env.tag }} - ${{ matrix.build_env.pkgarch }} :: ${{ matrix.build_env.target }}/${{ matrix.build_env.subtarget }}"
     runs-on: ubuntu-22.04
     strategy:
       matrix:
@@ -56,11 +56,21 @@ jobs:
           path: amneziawg-openwrt
           fetch-depth: 0
 
-      - name: Checkout OpenWrt
+      - name: Checkout OpenWrt snapshot repository
         uses: actions/checkout@v4
+        if: ${{ matrix.build_env.tag == 'SNAPSHOT' }}
         with:
           path: openwrt
           repository: openwrt/openwrt
+          fetch-depth: 0
+      
+      - name: Checkout OpenWrt regular repository
+        uses: actions/checkout@v4
+        if: ${{ matrix.build_env.tag != 'SNAPSHOT' }}
+        with:
+          path: openwrt
+          repository: openwrt/openwrt
+          ref: v${{ matrix.build_env.tag }}
           fetch-depth: 0
 
       - name: Build toolchain and kernel

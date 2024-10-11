@@ -56,7 +56,7 @@ jobs:
           path: amneziawg-openwrt
           fetch-depth: 0
 
-      - name: Checkout OpenWrt snapsots repository
+      - name: Checkout OpenWrt snapshot repository
         uses: actions/checkout@v4
         if: ${{ matrix.build_env.tag == 'SNAPSHOT' }}
         with:
