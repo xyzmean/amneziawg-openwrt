@@ -101,7 +101,7 @@ jobs:
           make show-env
           make export-env >> $GITHUB_OUTPUT
           time -p make build-amneziawg
-          make prepare-artifacts
+          make prepare-artifacts >> $GITHUB_OUTPUT
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
