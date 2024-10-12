@@ -17,10 +17,10 @@ OPENWRT_VERMAGIC  ?= any
 GITHUB_SHA        ?= $(shell git rev-parse --short HEAD)
 VERSION_STR       ?= $(shell git describe --tags --long --dirty)
 POSTFIX           := $(OPENWRT_RELEASE)_$(OPENWRT_ARCH)_$(OPENWRT_TARGET)_$(OPENWRT_SUBTARGET)
-#POSTFIX           := $(VERSION_STR)_$(OPENWRT_RELEASE)_$(OPENWRT_ARCH)_$(OPENWRT_TARGET)_$(OPENWRT_SUBTARGET)
 POSTFIX_RELEASE   := $(GITHUB_REF_NAME)_$(OPENWRT_RELEASE)_$(OPENWRT_ARCH)_$(OPENWRT_TARGET)_$(OPENWRT_SUBTARGET)
 
 WORKFLOW_REF      ?= $(shell git rev-parse --abbrev-ref HEAD)
+FINAL_VERMAGIC    := $(shell cat $(OPENWRT_SRCDIR)/build_dir/target-$(OPENWRT_ARCH)*/linux-$(OPENWRT_TARGET)_$(OPENWRT_SUBTARGET)/linux-*/.vermagic)
 
 NPROC ?= $(shell getconf _NPROCESSORS_ONLN)
 
@@ -74,7 +74,8 @@ SHOW_ENV_VARS = \
 	OPENWRT_VERMAGIC \
 	OPENWRT_BASE_URL \
 	OPENWRT_MANIFEST \
-	NPROC
+	NPROC \
+	FINAL_VERMAGIC
 
 show-var-%:
 	@{ \
@@ -197,11 +198,10 @@ build-amneziawg: ## Build amneziawg-openwrt kernel module and packages
 		exit 1 ; \
 	fi ; \
 	echo "src-git awgopenwrt $(AMNEZIAWG_SRCDIR)^$(GITHUB_SHA)" > feeds.conf ; \
-	./scripts/feeds update ; \
-	./scripts/feeds install -a ; \
+	#./scripts/feeds update ; \
+	#./scripts/feeds install -a ; \
 	mv .config.old .config ; \
 	echo "CONFIG_PACKAGE_kmod-amneziawg=m" >> .config ; \
-	echo "CONFIG_PACKAGE_kmod-amneziawg-old=m" >> .config ; \
 	echo "CONFIG_PACKAGE_amneziawg-tools=y" >> .config ; \
 	echo "CONFIG_PACKAGE_luci-proto-amneziawg=y" >> .config ; \
 	make defconfig ; \
@@ -209,10 +209,6 @@ build-amneziawg: ## Build amneziawg-openwrt kernel module and packages
 	make V=s package/kmod-amneziawg/download ; \
 	make V=s package/kmod-amneziawg/prepare ; \
 	make V=s package/kmod-amneziawg/compile ; \
-	make V=s package/kmod-amneziawg-old/clean ; \
-	make V=s package/kmod-amneziawg-old/download ; \
-	make V=s package/kmod-amneziawg-old/prepare ; \
-	make V=s package/kmod-amneziawgold/compile ; \
 	make V=s package/luci-proto-amneziawg/clean ; \
 	make V=s package/luci-proto-amneziawg/download ; \
 	make V=s package/luci-proto-amneziawg/prepare ; \
@@ -231,10 +227,9 @@ prepare-artifacts: ## Save amneziawg-openwrt artifacts from regular builds
 	VERMAGIC=$$(cat ./build_dir/target-$(OPENWRT_ARCH)*/linux-$(OPENWRT_TARGET)_$(OPENWRT_SUBTARGET)/linux-*/.vermagic) ; \
 	echo "Vermagic: $${VERMAGIC}" ; \
 	mkdir -p $(AMNEZIAWG_DSTDIR) ; \
-	cp bin/packages/$(OPENWRT_ARCH)/awgopenwrt/amneziawg-tools_*.ipk $(AMNEZIAWG_DSTDIR)/amneziawg-tools_$(POSTFIX)_$${VERMAGIC}.ipk ; \
-	cp bin/packages/$(OPENWRT_ARCH)/awgopenwrt/luci-proto-amneziawg_*.ipk $(AMNEZIAWG_DSTDIR)/luci-proto-amneziawg_$(POSTFIX)_$${VERMAGIC}.ipk ; \
+	cp bin/packages/$(OPENWRT_ARCH)/awgopenwrt/amneziawg-tools_*.ipk $(AMNEZIAWG_DSTDIR)/amneziawg-tools_$(POSTFIX)_$(VERMAGIC).ipk ; \
+	cp bin/packages/$(OPENWRT_ARCH)/awgopenwrt/luci-proto-amneziawg_*.ipk $(AMNEZIAWG_DSTDIR)/luci-proto-amneziawg_$(POSTFIX)_$(VERMAGIC).ipk ; \
 	cp bin/targets/$(OPENWRT_TARGET)/$(OPENWRT_SUBTARGET)/packages/kmod-amneziawg_*.ipk $(AMNEZIAWG_DSTDIR)/kmod-amneziawg_$(POSTFIX)_$${VERMAGIC}.ipk ; \
-	cp bin/targets/$(OPENWRT_TARGET)/$(OPENWRT_SUBTARGET)/packages/kmod-amneziawg-old_*.ipk $(AMNEZIAWG_DSTDIR)/kmod-amneziawg-old_$(POSTFIX)_$${VERMAGIC}.ipk ; \
 	}
 
 .PHONY: check-release
@@ -266,5 +261,4 @@ prepare-release: check-release ## Save amneziawg-openwrt artifacts from tagged r
 	cp bin/packages/$(OPENWRT_ARCH)/awgopenwrt/amneziawg-tools_*.ipk $(AMNEZIAWG_DSTDIR)/amneziawg-tools_$(POSTFIX_RELEASE).ipk ; \
 	cp bin/packages/$(OPENWRT_ARCH)/awgopenwrt/luci-proto-amneziawg_*.ipk $(AMNEZIAWG_DSTDIR)/luci-proto-amneziawg_$(POSTFIX_RELEASE).ipk ; \
 	cp bin/targets/$(OPENWRT_TARGET)/$(OPENWRT_SUBTARGET)/packages/kmod-amneziawg_*.ipk $(AMNEZIAWG_DSTDIR)/kmod-amneziawg_$(POSTFIX_RELEASE).ipk ; \
-	cp bin/targets/$(OPENWRT_TARGET)/$(OPENWRT_SUBTARGET)/packages/kmod-amneziawg-old_*.ipk $(AMNEZIAWG_DSTDIR)/kmod-amneziawg-old_$(POSTFIX_RELEASE).ipk ; \
 	}
