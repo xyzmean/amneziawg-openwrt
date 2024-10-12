@@ -32,8 +32,9 @@ endef
 
 define Build/Prepare
 	$(call Build/Prepare/Default)
-	cp -r $(BUILD_DIR)/amneziawg-linux-kernel-module-$(PKG_VERSION)/* $(PKG_BUILD_DIR)
-	ln -s $(LINUX_DIR) $(PKG_BUILD_DIR)/$(MAKE_PATH)/kernel
+	cp -fr $(BUILD_DIR)/amneziawg-linux-kernel-module-$(PKG_VERSION)/* $(PKG_BUILD_DIR)
+	cp -fr $(LINUX_DIR) $(PKG_BUILD_DIR)/$(MAKE_PATH)/kernel
+	#ln -s $(LINUX_DIR) $(PKG_BUILD_DIR)/$(MAKE_PATH)/kernel
 endef
 
 define Build/Compile
