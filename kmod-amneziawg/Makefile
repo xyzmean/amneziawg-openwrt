@@ -12,10 +12,6 @@ PKG_SOURCE_DATE:=2024-10-13
 PKG_SOURCE_VERSION:=8d1b073205538673f5da4831c4d39ef8acf44f8c
 PKG_MIRROR_HASH:=3688fe5cf914384ba538528ce98af82190d37ac35d1029131296cf645fdeb3ea
 
-# PKG_SOURCE:=master.tar.gz
-# PKG_SOURCE_URL:=https://github.com/amnezia-vpn/amneziawg-linux-kernel-module/archive/refs/heads/
-# PKG_HASH:=3688fe5cf914384ba538528ce98af82190d37ac35d1029131296cf645fdeb3ea
-
 PKG_BUILD_DIR=$(BUILD_DIR)/$(PKG_NAME)-$(PKG_VERSION)
 
 include $(INCLUDE_DIR)/package.mk
