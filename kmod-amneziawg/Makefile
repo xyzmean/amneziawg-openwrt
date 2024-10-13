@@ -2,13 +2,19 @@ include $(TOPDIR)/rules.mk
 include $(INCLUDE_DIR)/kernel.mk
 
 PKG_NAME:=kmod-amneziawg
-PKG_VERSION:=1.0.20240711
+PKG_VERSION:=1.0.20241013
 PKG_RELEASE:=1
 WIREGUARD_VERSION:=1.0.0
 
-PKG_SOURCE:=v$(PKG_VERSION).tar.gz
-PKG_SOURCE_URL:=https://github.com/amnezia-vpn/amneziawg-linux-kernel-module/archive/refs/tags/
-PKG_HASH:=b8925c5d1057d05059a9a80ddfdbe8a0c4c5507f84d8cd3b1f0c567e50064abf
+PKG_SOURCE_PROTO:=git
+PKG_SOURCE_URL:=https://github.com/amnezia-vpn/amneziawg-linux-kernel-module.git
+PKG_SOURCE_DATE:=2024-10-13
+PKG_SOURCE_VERSION:=8d1b073205538673f5da4831c4d39ef8acf44f8c
+PKG_MIRROR_HASH:=3688fe5cf914384ba538528ce98af82190d37ac35d1029131296cf645fdeb3ea
+
+# PKG_SOURCE:=master.tar.gz
+# PKG_SOURCE_URL:=https://github.com/amnezia-vpn/amneziawg-linux-kernel-module/archive/refs/heads/
+# PKG_HASH:=3688fe5cf914384ba538528ce98af82190d37ac35d1029131296cf645fdeb3ea
 
 PKG_BUILD_DIR=$(BUILD_DIR)/$(PKG_NAME)-$(PKG_VERSION)
 
@@ -29,7 +35,7 @@ endef
 
 define Build/Prepare
 	$(call Build/Prepare/Default)
-	$(CP) $(BUILD_DIR)/amneziawg-linux-kernel-module-$(PKG_VERSION)/src/* $(PKG_BUILD_DIR)/
+	$(CP) $(BUILD_DIR)/amneziawg-linux-kernel-module-master/src/* $(PKG_BUILD_DIR)/
 	mkdir -p $(PKG_BUILD_DIR)/kernel
 	$(CP) $(LINUX_DIR)/* $(PKG_BUILD_DIR)/kernel/
 	#ln -s $(LINUX_DIR) $(PKG_BUILD_DIR)/$(MAKE_PATH)/kernel
