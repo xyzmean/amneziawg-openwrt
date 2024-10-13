@@ -210,6 +210,10 @@ build-amneziawg: ## Build amneziawg-openwrt kernel module and packages
 	make V=s package/kmod-amneziawg/download ; \
 	make V=s package/kmod-amneziawg/prepare ; \
 	make V=s package/kmod-amneziawg/compile ; \
+	make V=s package/kmod-amneziawg-old/clean ; \
+	make V=s package/kmod-amneziawg-old/download ; \
+	make V=s package/kmod-amneziawg-old/prepare ; \
+	make V=s package/kmod-amneziawg-old/compile ; \
 	make V=s package/luci-proto-amneziawg/clean ; \
 	make V=s package/luci-proto-amneziawg/download ; \
 	make V=s package/luci-proto-amneziawg/prepare ; \
