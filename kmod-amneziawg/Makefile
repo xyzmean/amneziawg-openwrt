@@ -12,7 +12,8 @@ PKG_SOURCE_DATE:=2024-10-13
 PKG_SOURCE_VERSION:=8d1b073205538673f5da4831c4d39ef8acf44f8c
 PKG_MIRROR_HASH:=3688fe5cf914384ba538528ce98af82190d37ac35d1029131296cf645fdeb3ea
 
-PKG_BUILD_DIR=$(BUILD_DIR)/$(PKG_NAME)-$(PKG_VERSION)
+PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_NAME)-$(PKG_VERSION)
+MAKE_PATH:=src
 
 include $(INCLUDE_DIR)/package.mk
 
@@ -21,7 +22,7 @@ define KernelPackage/amneziawg
 	CATEGORY:=Kernel modules
 	SUBMENU:=Network Support
 	TITLE:=AmneziaWG VPN Kernel Module
-	FILES:=$(PKG_BUILD_DIR)/generated/amneziawg.ko
+	FILES:=$(PKG_BUILD_DIR)/$(MAKE_PATH)/generated/amneziawg.ko
 	DEPENDS:= \
 		+kmod-udptunnel4 \
 		+kmod-udptunnel6 \
@@ -31,15 +32,13 @@ endef
 
 define Build/Prepare
 	$(call Build/Prepare/Default)
-	$(CP) $(BUILD_DIR)/amneziawg-linux-kernel-module-master/src/* $(PKG_BUILD_DIR)/
-	mkdir -p $(PKG_BUILD_DIR)/kernel
-	$(CP) $(LINUX_DIR)/* $(PKG_BUILD_DIR)/kernel/
-	#ln -s $(LINUX_DIR) $(PKG_BUILD_DIR)/$(MAKE_PATH)/kernel
+	mkdir -p $(PKG_BUILD_DIR)/$(MAKE_PATH)/kernel
+	$(CP) $(LINUX_DIR)/* $(PKG_BUILD_DIR)/$(MAKE_PATH)/kernel/
 endef
 
 define Build/Compile
-	$(MAKE_VARS) $(MAKE) $(PKG_JOBS) -C $(PKG_BUILD_DIR) $(MAKE_FLAGS) apply-patches
-	$(MAKE_VARS) $(MAKE) -C "$(LINUX_DIR)" $(KERNEL_MAKE_FLAGS) M="$(PKG_BUILD_DIR)/generated" EXTRA_CFLAGS="$(BUILDFLAGS)" WIREGUARD_VERSION="$(WIREGUARD_VERSION)" modules
+	$(MAKE_VARS) $(MAKE) $(PKG_JOBS) -C $(PKG_BUILD_DIR)/$(MAKE_PATH) $(MAKE_FLAGS) apply-patches
+	$(MAKE_VARS) $(MAKE) -C "$(LINUX_DIR)" $(KERNEL_MAKE_FLAGS) M="$(PKG_BUILD_DIR)/$(MAKE_PATH)/generated" EXTRA_CFLAGS="$(BUILDFLAGS)" WIREGUARD_VERSION="$(WIREGUARD_VERSION)" modules
 endef
 
 $(eval $(call KernelPackage,amneziawg))
