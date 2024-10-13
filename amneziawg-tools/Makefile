@@ -30,6 +30,7 @@ MAKE_VARS += PLATFORM=linux
 
 define Package/amneziawg-tools
   CATEGORY:=Network
+  SUBMENU:=VPN
   URL:=https://amnezia.org/
   MAINTAINER:=Amnezia Admin <admin@amnezia.org>
   TITLE:=AmneziaWG userspace control program (amneziawg)
