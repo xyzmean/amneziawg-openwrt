@@ -198,8 +198,8 @@ build-amneziawg: ## Build amneziawg-openwrt kernel module and packages
 		exit 1 ; \
 	fi ; \
 	echo "src-git awgopenwrt $(AMNEZIAWG_SRCDIR)^$(GITHUB_SHA)" > feeds.conf ; \
-	#./scripts/feeds update ; \
-	#./scripts/feeds install -a ; \
+	./scripts/feeds update ; \
+	./scripts/feeds install -a ; \
 	mv .config.old .config ; \
 	echo "CONFIG_PACKAGE_kmod-amneziawg=m" >> .config ; \
 	echo "CONFIG_PACKAGE_amneziawg-tools=y" >> .config ; \
