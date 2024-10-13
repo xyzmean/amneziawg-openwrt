@@ -4,12 +4,12 @@ This project is aimed to update sources of the initial AmneziaWG and make them a
 Why? Because it looks like the original repository is abandoned: more than half a year has passed since the last commit and no bugs were fixed while two upstream projects receive updates on a regular basis (at least from the community).
 
 The main differences and objectives:
-1. I have aligned `luci-proto-amneziawg` in accordance with `luci-proto-wireguard`:
+1. `luci-proto-amneziawg` has been aligned in accordance with `luci-proto-wireguard`:
    - AmneziaWG settings tab now have placeholders (default values, if choosen, will mimic classic Wireguard protocol).
    - Fixed bug with QR code generation. Please note that the generated QR code will contain AmneziaWG specific information (remove it manually to make it compatable with calssic Wireguard).
    - Added checkboxes to enable/disable peers.
    - Took `luci-proto-wireguard` as the codebase.
-3. I have aligned `amneziawg-tools` in accordance with the upsream repo [amneziawg-tools](https://github.com/amnezia-vpn/amneziawg-tools/):
+3. `amneziawg-tools` has been aligned  in accordance with the upsream repo [amneziawg-tools](https://github.com/amnezia-vpn/amneziawg-tools/):
    - The package is now compiled based on the upstream repo. Master branch has been choosen as a reference.
    - Fixed bug with non-existent `proto_amneziawg_check_installed` method.
    - Changed temp folders and files to match the protocol name.
