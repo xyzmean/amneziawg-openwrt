@@ -102,7 +102,7 @@ function handleWindowDragDropIgnore(ev) {
 
 return network.registerProtocol('amneziawg', {
 	getI18n: function() {
-		return _('AmneziaWG');
+		return _('AmneziaWG VPN');
 	},
 
 	getIfname: function() {
