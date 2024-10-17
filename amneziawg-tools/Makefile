@@ -1,20 +1,12 @@
-#
-# Copyright (C) 2016-2019 Jason A. Donenfeld <Jason@zx2c4.com>
-# Copyright (C) 2016 Baptiste Jonglez <openwrt@bitsofnetworks.org>
-# Copyright (C) 2016-2017 Dan Luedtke <mail@danrl.com>
-#
-# This is free software, licensed under the GNU General Public License v2.
-# See /LICENSE for more information.
-
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=amneziawg-tools
-PKG_VERSION:=1.0.20241013
+PKG_VERSION:=1.0.20241017
 PKG_RELEASE:=1
 
 PKG_SOURCE_PROTO:=git
 PKG_SOURCE_URL:=https://github.com/amnezia-vpn/amneziawg-tools.git
-PKG_SOURCE_DATE:=2024-10-13
+PKG_SOURCE_DATE:=2024-10-17
 PKG_SOURCE_VERSION:=c0b400c6dfc046f5cae8f3051b14cb61686fcf55
 PKG_MIRROR_HASH:=1f9c6b504bf02142311eb623c8b13a992b00f9aab517f02cf41630cb9c30e19d
 
@@ -33,7 +25,7 @@ define Package/amneziawg-tools
   SUBMENU:=VPN
   URL:=https://amnezia.org/
   MAINTAINER:=Amnezia Admin <admin@amnezia.org>
-  TITLE:=AmneziaWG userspace control program (amneziawg)
+  TITLE:=AmneziaWG userspace control program (awg)
   DEPENDS:= \
 	  +@BUSYBOX_CONFIG_IP \
 	  +@BUSYBOX_CONFIG_FEATURE_IP_LINK
@@ -44,7 +36,7 @@ define Package/amneziawg-tools/description
 	high privacy requirements.
 
   This package provides the userspace control program for AmneziaWG,
-  `amneziawg`, a netifd protocol helper, and a re-resolve watchdog script.
+  `awg`, a netifd protocol helper, and a re-resolve watchdog script.
 endef
 
 define Package/amneziawg-tools/install
