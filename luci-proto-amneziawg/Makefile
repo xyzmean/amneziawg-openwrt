@@ -2,7 +2,7 @@ include $(TOPDIR)/rules.mk
 
 LUCI_TITLE:=Support for AmneziaWG VPN
 LUCI_DESCRIPTION:=Provides support and Web UI for AmneziaWG VPN
-PKG_VERSION:=1.0.20241017
+PKG_VERSION:=1.0.20241021
 LUCI_DEPENDS:=+amneziawg-tools +ucode +luci-lib-uqr
 LUCI_PKGARCH:=all
 
