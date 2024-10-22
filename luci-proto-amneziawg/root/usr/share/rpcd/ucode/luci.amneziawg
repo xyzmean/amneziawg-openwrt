@@ -76,7 +76,7 @@ const methods = {
 						let peer_name;
 
 						uci.foreach('network', `amneziawg_${last_device}`, (s) => {
-							if (s.public_key == record[1])
+							if (s.public_key == record[1] && s.endpoint_host + ":" + s.endpoint_port == record[3])
 								peer_name = s.description;
 						});
 
