@@ -28,6 +28,7 @@ function checkPeerHost(configHost, configPort, wgHost) {
 	return false;
 }
 
+
 const methods = {
 	generatePsk: {
 		call: function() {
@@ -88,7 +89,7 @@ const methods = {
 						let peer_name;
 
 						uci.foreach('network', `amneziawg_${last_device}`, (s) => {
-							if (!s.disabled && s.public_key == record[1] && checkPeerHost(s.endpoint_host, s.endpoint_port, record[3]))
+							if (!s.disabled && s.public_key == record[1] && (!s.endpoint_host || checkPeerHost(s.endpoint_host, s.endpoint_port, record[3])))
 								peer_name = s.description;
 						});
 
