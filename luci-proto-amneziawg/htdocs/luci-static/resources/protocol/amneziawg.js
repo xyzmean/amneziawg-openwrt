@@ -261,6 +261,7 @@ return network.registerProtocol('amneziawg', {
 		ss.addbtntitle = _('Add peer');
 		ss.nodescriptions = true;
 		ss.modaltitle = _('Edit peer');
+		ss.sortable = true;
 
 		ss.handleDragConfig = function(ev) {
 			ev.stopPropagation();
