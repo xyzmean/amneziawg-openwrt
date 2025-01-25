@@ -109,7 +109,7 @@ return network.registerProtocol('amneziawg', {
 		return this._ubus('l3_device') || this.sid;
 	},
 
-	getOpkgPackage: function() {
+	getPackageName: function() {
 		return 'amneziawg-tools';
 	},
 
@@ -184,7 +184,7 @@ return network.registerProtocol('amneziawg', {
 		o.placeholder = '1420';
 		o.optional = true;
 
-		o = s.taboption('advanced', form.Value, 'fwmark', _('Firewall Mark'), _('Optional. 32-bit mark for outgoing encrypted packets. Enter value in hex, starting with <code>0x</code>.'));
+		o = s.taboption('advanced', form.Value, 'fwmark', _('Firewall Mark'), _('Optional. 32-bit mark for packets during firewall processing. Enter value in hex, starting with <code>0x</code>.'));
 		o.optional = true;
 		o.validate = function(section_id, value) {
 			if (value.length > 0 && !value.match(/^0x[a-fA-F0-9]{1,8}$/))
@@ -482,7 +482,7 @@ return network.registerProtocol('amneziawg', {
 					E('p', _('Drag or paste a valid <em>*.conf</em> file below to configure the local AmneziaWG interface.'))
 				] : [
 					E('p', _('Paste or drag a AmneziaWG configuration (commonly <em>wg0.conf</em>) from another system below to create a matching peer entry allowing that system to connect to the local AmneziaWG interface.')),
-					E('p', _('To fully configure the local AmneziaWG interface from an existing (e.g. provider supplied) configuration file, use the <strong><a class="full-import" href="#">configuration import</a></strong> instead.'))
+					E('p', _('To configure fully the local AmneziaWG interface from an existing (e.g. provider supplied) configuration file, use the <strong><a class="full-import" href="#">configuration import</a></strong> instead.'))
 				]),
 				E('p', [
 					E('textarea', {
@@ -739,7 +739,7 @@ return network.registerProtocol('amneziawg', {
 
 		o.createPeerConfig = function(section_id, endpoint, ips, eips, dns) {
 			var pub = s.formvalue(s.section, 'public_key'),
-				port = s.formvalue(s.section, 'listen_port') || '51820',
+			    port = s.formvalue(s.section, 'listen_port') || '51820',
 				jc = s.formvalue(s.section, 'awg_jc'),
 				jmin = s.formvalue(s.section, 'awg_jmin'),
 				jmax = s.formvalue(s.section, 'awg_jmax'),
@@ -749,10 +749,10 @@ return network.registerProtocol('amneziawg', {
 				h2 = s.formvalue(s.section, 'awg_h2'),
 				h3 = s.formvalue(s.section, 'awg_h3'),
 				h4 = s.formvalue(s.section, 'awg_h4'),
-				prv = this.section.formvalue(section_id, 'private_key'),
-				psk = this.section.formvalue(section_id, 'preshared_key'),
-				eport = this.section.formvalue(section_id, 'endpoint_port'),
-				keep = this.section.formvalue(section_id, 'persistent_keepalive');
+			    prv = this.section.formvalue(section_id, 'private_key'),
+			    psk = this.section.formvalue(section_id, 'preshared_key'),
+			    eport = this.section.formvalue(section_id, 'endpoint_port'),
+			    keep = this.section.formvalue(section_id, 'persistent_keepalive');
 
 			// If endpoint is IPv6 we must escape it with []
 			if (endpoint.indexOf(':') > 0) {
