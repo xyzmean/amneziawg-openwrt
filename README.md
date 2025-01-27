@@ -31,10 +31,11 @@ Side note: the build process is not hard at all, but requires some attention and
 General steps:
 1. Get parameters for your router:
      - OpenWRT version: `SNAPSHOT` or release (e.x. `23.05.5`). Can be found on the `Status -> Overview` page (`Firmware Version` parameter value).
-     - CPU/package architecture: run `apk info kernel` in console and check the `Architecture` value (e.x. `aarch64_cortex-a53`) or consult [OpenWRT router database](https://openwrt.org/toh/start).
+     - Package manager you are using: `apk` (the newer one) or `opkg` (the legacy one). If you are running a stable version of OpenWRT then it's more likely you use `opkg`. `apk` is used only in the `main`/`master` branch so far. To make sure run the following commands: `apk -h` and `opkg -h`. The one that's won't fail (`command not found` message is shown) shows the package manager that you use.
+     - CPU/package architecture: run `apk info kernel` or `opkg info kernel` (depending on your package manager) in console and check the `Architecture` value (e.x. `aarch64_cortex-a53`) or consult [OpenWRT router database](https://openwrt.org/toh/start).
      - Target: can be found on the `Status -> Overview` page. The first part (before the slash) of the `Target Platform` value.
      - Subtarget: can be found on the `Status -> Overview` page. You guessed it! The second part (after the slash) of the `Target Platform` value.
-     - Vermagic: run `apk info kernel` in console check hash after the kernel version of the `Version` value. E.x. if the value equals to `6.6.52~f58afd3748410d3b1baa06a466d6682-r1` then vermagic equals to `f58afd3748410d3b1baa06a466d6682`. You can also choose:
+     - Vermagic: run `apk info kernel` or `opkg info kernel` (depending on your package manager) in console check hash after the kernel version of the `Version` value. E.x. if the value equals to `6.6.52~f58afd3748410d3b1baa06a466d6682-r1` then vermagic equals to `f58afd3748410d3b1baa06a466d6682`. You can also choose:
          - `auto`: the script will get vermagic value from the OpenWrt site.
          - `any`: the script will not check the variable.
 3. Make a fork of this repo.
@@ -53,9 +54,9 @@ General steps:
        - Repeat those steps for amneziawg-tools .ipk file and then luci-proto-amneziawg .ipk file.
    - Via console:
        - Transfer files into the router.
-       - Run `apk install {path to the kmod-amneziawg .ipk}`
-       - Run `apk install {path to the amneziawg-tools .ipk}`
-       - Run `apk install {path to the luci-proto-amneziawg .ipk}`
+       - Run `apk install {path to the kmod-amneziawg .ipk}` or `opkg install {path to the kmod-amneziawg .ipk}` depending on your package manager.
+       - Run `apk install {path to the amneziawg-tools .ipk}` or `opkg install {path to the amneziawg-tools .ipk}` depending on your package manager.
+       - Run `apk install {path to the luci-proto-amneziawg .ipk}` or `opkg install {path to the luci-proto-amneziawg .ipk}` depending on your package manager.
 11. Reboot router or run `/etc/init.d/network restart` command in the console.
 12. Congratulations - you now have AmneziaWG installed on your router. Go to `Network -> Interfaces` page, press `Add new interface..` and select `AmneziaWG` as protocol.
 
