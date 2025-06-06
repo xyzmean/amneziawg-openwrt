@@ -201,7 +201,7 @@ proto_amneziawg_setup() {
 
 	if proto_amneziawg_is_kernel_mode; then
 		logger -t "amneziawg" "info: using kernel-space kmod-amneziawg for ${AWG}"
-  	ip link del dev "${config}" 2>/dev/null
+		ip link del dev "${config}" 2>/dev/null
 		ip link add dev "${config}" type amneziawg
 	else
 		logger -t "amneziawg" "info: using user-space amneziawg-go for ${AWG}"

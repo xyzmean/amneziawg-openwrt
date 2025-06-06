@@ -7,7 +7,7 @@
 					"getWgInstances"
 				]
 			},
-			"uci": [ "ddns", "system" ]
+			"uci": [ "ddns", "system", "network" ]
 		},
 		"write": {
 			"ubus": {
