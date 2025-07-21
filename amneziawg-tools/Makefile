@@ -6,8 +6,8 @@ PKG_RELEASE:=1
 
 PKG_SOURCE_PROTO:=git
 PKG_SOURCE_URL:=https://github.com/amnezia-vpn/amneziawg-tools.git
-# Version: feature/awg-fix branch
-PKG_SOURCE_VERSION:=430e39aaf9008840b016d8be1204aede89749e01
+# Version: v1.0.20250706
+PKG_SOURCE_VERSION:=2b593ee0860e2ecc7cfcbfab4261194256329048
 PKG_MIRROR_HASH:=skip
 
 PKG_LICENSE:=GPL-2.0
