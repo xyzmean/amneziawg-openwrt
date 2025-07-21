@@ -1,6 +1,6 @@
 # YAAWG: Yet another AmneziaWG variation for OpenWrt
 
-This project is aimed to update sources of the initial AmneziaWG and make them as close to three upstream projects ([luci-proto-wireguard](https://github.com/openwrt/luci/tree/master/protocols/luci-proto-wireguard), [amneziawg-tools](https://github.com/amnezia-vpn/amneziawg-tools/), [amneziawg-linux-kernel-module](https://github.com/amnezia-vpn/amneziawg-linux-kernel-module)) as possible.
+This project is aimed to update sources of the initial AmneziaWG and make them as close to four upstream projects ([luci-proto-wireguard](https://github.com/openwrt/luci/tree/master/protocols/luci-proto-wireguard), [amneziawg-tools](https://github.com/amnezia-vpn/amneziawg-tools/), [amneziawg-linux-kernel-module](https://github.com/amnezia-vpn/amneziawg-linux-kernel-module), [amneziawg-go](https://github.com/amnezia-vpn/amneziawg-go) as possible.
 
 Why? Because it looks like the original repository is abandoned: more than half a year has passed since the last commit and no bugs were fixed while two upstream projects receive updates on a regular basis (at least from the community).
 
@@ -10,11 +10,13 @@ The main differences and objectives:
    - Fixed bug with QR code generation. Please note that the generated QR code will contain AmneziaWG specific information (remove it manually to make it compatible with classic Wireguard).
    - Added checkboxes to enable/disable peers.
    - Took `luci-proto-wireguard` as the codebase.
+   - Added the correct icon for the interface.
 3. `amneziawg-tools` has been aligned  in accordance with the upstream repo [amneziawg-tools](https://github.com/amnezia-vpn/amneziawg-tools/):
    - The package is now compiled based on the upstream repo. Master branch has been chosen as a reference.
    - Fixed bug with non-existent `proto_amneziawg_check_installed` method.
    - Changed temp folders and files to match the protocol name.
    - Refactored scripts a bit to make them look more `amneziish`.
+   - Fixed bug with incorrect path when using `amneziawg-go`.
 4. `kmod-amneziawg` is now compiled totally based on the upstream [amneziawg-linux-kernel-module](https://github.com/amnezia-vpn/amneziawg-linux-kernel-module) repo. Master branch has been chosen as a reference.
 5. `amneziawg-go` has been introduced in version `1.0.20250721` as a replacement for `kmod-amneziawg` beacuse it seems that kernel module has been discontinued. Please check [this section](#kmod-amneziawg-vs-amneziawg-go) for more information. The Go implementation is also totally based on the upstream project [amneziawg-go](https://github.com/amnezia-vpn/amneziawg-go).
 
