@@ -50,6 +50,11 @@ jobs:
       OPENWRT_VERMAGIC: ${{ matrix.build_env.vermagic }}
 
     steps:
+      - name: Install Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '>=1.24.4'
+
       - name: Checkout amneziawg-openwrt
         uses: actions/checkout@v4
         with:

@@ -205,7 +205,7 @@ proto_amneziawg_setup() {
 		ip link add dev "${config}" type amneziawg
 	else
 		logger -t "amneziawg" "info: using user-space amneziawg-go for ${AWG}"
-		rm -f "/var/run/wireguard/${config}.sock"
+		rm -f "/var/run/amneziawg/${config}.sock"
 		amneziawg-go "${config}"
 	fi
 
@@ -308,7 +308,7 @@ proto_amneziawg_teardown() {
 	if proto_amneziawg_is_kernel_mode; then
 		ip link del dev "${config}" >/dev/null 2>&1
 	else
-		rm -f "/var/run/wireguard/${config}.sock"
+		rm -f "/var/run/amneziawg/${config}.sock"
 	fi
 }
 

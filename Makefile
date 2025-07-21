@@ -207,6 +207,7 @@ build-amneziawg: ## Build amneziawg-openwrt kernel module and packages
 	./scripts/feeds install -a ; \
 	mv .config.old .config ; \
 	echo "CONFIG_PACKAGE_kmod-amneziawg=m" >> .config ; \
+	echo "CONFIG_PACKAGE_amneziawg-go=y" >> .config ; \
 	echo "CONFIG_PACKAGE_amneziawg-tools=y" >> .config ; \
 	echo "CONFIG_PACKAGE_luci-proto-amneziawg=y" >> .config ; \
 	make defconfig ; \
@@ -214,6 +215,10 @@ build-amneziawg: ## Build amneziawg-openwrt kernel module and packages
 	make V=s package/kmod-amneziawg/download ; \
 	make V=s package/kmod-amneziawg/prepare ; \
 	make V=s package/kmod-amneziawg/compile ; \
+	make V=s package/amneziawg-go/clean ; \
+	make V=s package/amneziawg-go/download ; \
+	make V=s package/amneziawg-go/prepare ; \
+	make V=s package/amneziawg-go/compile ; \
 	make V=s package/luci-proto-amneziawg/clean ; \
 	make V=s package/luci-proto-amneziawg/download ; \
 	make V=s package/luci-proto-amneziawg/prepare ; \
@@ -233,6 +238,7 @@ prepare-artifacts: ## Save amneziawg-openwrt artifacts from regular builds
 	echo "Vermagic: $${VERMAGIC}" ; \
 	mkdir -p $(AMNEZIAWG_DSTDIR) ; \
 	cp bin/packages/$(OPENWRT_ARCH)/awgopenwrt/amneziawg-tools_*.ipk $(AMNEZIAWG_DSTDIR)/amneziawg-tools_$(POSTFIX)_$${VERMAGIC}.ipk ; \
+	cp bin/packages/$(OPENWRT_ARCH)/awgopenwrt/amneziawg-go_*.ipk $(AMNEZIAWG_DSTDIR)/amneziawg-go_$(POSTFIX)_$${VERMAGIC}.ipk ; \
 	cp bin/packages/$(OPENWRT_ARCH)/awgopenwrt/luci-proto-amneziawg_*.ipk $(AMNEZIAWG_DSTDIR)/luci-proto-amneziawg_$(POSTFIX)_$${VERMAGIC}.ipk ; \
 	cp bin/targets/$(OPENWRT_TARGET)/$(OPENWRT_SUBTARGET)/packages/kmod-amneziawg_*.ipk $(AMNEZIAWG_DSTDIR)/kmod-amneziawg_$(POSTFIX)_$${VERMAGIC}.ipk ; \
 	}
@@ -266,4 +272,5 @@ prepare-release: check-release ## Save amneziawg-openwrt artifacts from tagged r
 	cp bin/packages/$(OPENWRT_ARCH)/awgopenwrt/amneziawg-tools_*.ipk $(AMNEZIAWG_DSTDIR)/amneziawg-tools_$(POSTFIX_RELEASE).ipk ; \
 	cp bin/packages/$(OPENWRT_ARCH)/awgopenwrt/luci-proto-amneziawg_*.ipk $(AMNEZIAWG_DSTDIR)/luci-proto-amneziawg_$(POSTFIX_RELEASE).ipk ; \
 	cp bin/targets/$(OPENWRT_TARGET)/$(OPENWRT_SUBTARGET)/packages/kmod-amneziawg_*.ipk $(AMNEZIAWG_DSTDIR)/kmod-amneziawg_$(POSTFIX_RELEASE).ipk ; \
+	cp bin/packages/$(OPENWRT_ARCH)/awgopenwrt/amneziawg-go_*.ipk $(AMNEZIAWG_DSTDIR)/amneziawg-go_$(POSTFIX_RELEASE).ipk
 	}
