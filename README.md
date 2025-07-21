@@ -16,7 +16,7 @@ The main differences and objectives:
    - Changed temp folders and files to match the protocol name.
    - Refactored scripts a bit to make them look more `amneziish`.
 4. `kmod-amneziawg` is now compiled totally based on the upstream [amneziawg-linux-kernel-module](https://github.com/amnezia-vpn/amneziawg-linux-kernel-module) repo. Master branch has been chosen as a reference.
-5. `amneziawg-go` has been introduced in version `1.0.20250720` as a replacement for `kmod-amneziawg` beacuse it seems that kernel module has been discontinued. Please check [this section](#kmod-amneziawg-vs-amneziawg-go) for more information. The Go implementation is also totally based on the upstream project [amneziawg-go](https://github.com/amnezia-vpn/amneziawg-go).
+5. `amneziawg-go` has been introduced in version `1.0.20250721` as a replacement for `kmod-amneziawg` beacuse it seems that kernel module has been discontinued. Please check [this section](#kmod-amneziawg-vs-amneziawg-go) for more information. The Go implementation is also totally based on the upstream project [amneziawg-go](https://github.com/amnezia-vpn/amneziawg-go).
 
 # `kmod-amneziawg` vs `amneziawg-go`
 It looks like that kernel module (`kmod-amneziawg`) has been discontinued while the userspace implementation written in Go language (amneziawg-go) receives updates on a regular basis. Thus I decided to include the userspace implementation in the repo. It is now possible to choose:
