@@ -16,6 +16,14 @@ The main differences and objectives:
    - Changed temp folders and files to match the protocol name.
    - Refactored scripts a bit to make them look more `amneziish`.
 4. `kmod-amneziawg` is now compiled totally based on the upstream [amneziawg-linux-kernel-module](https://github.com/amnezia-vpn/amneziawg-linux-kernel-module) repo. Master branch has been chosen as a reference.
+5. `amneziawg-go` has been introduced in version `1.0.20250720` as a replacement for `kmod-amneziawg` beacuse it seems that kernel module has been discontinued. Please check [this section](#kmod-amneziawg-vs-amneziawg-go) for more information. The Go implementation is also totally based on the upstream project [amneziawg-go](https://github.com/amnezia-vpn/amneziawg-go).
+
+# `kmod-amneziawg` vs `amneziawg-go`
+It looks like that kernel module (`kmod-amneziawg`) has been discontinued while the userspace implementation written in Go language (amneziawg-go) receives updates on a regular basis. Thus I decided to include the userspace implementation in the repo. It is now possible to choose:
+1. Use `kmod-amneziawg`: it provides an older yet still working version of the protocol, but requires less powerful device to run and consumes less space.
+1. Use `amneziawg-go`: it provides a newer version of the protocol (v1.5+), but requires a more powerful device to run and consumes more space.
+
+Please choose and install only one implementation. If both implementations have been installed, `kmod-amneziawg` will be used by default.
 
 # Results
 
@@ -39,8 +47,8 @@ General steps:
          - `auto`: the script will get vermagic value from the OpenWrt site.
          - `any`: the script will not check the variable.
 3. Make a fork of this repo.
-4. Optional: update/change commit hashes (`PKG_SOURCE_VERSION` variable) of the upstream repos in `amneziawg-tools/Makefile` and `kmod-amneziawg/Makefile` file. Remember that `amneziawg-tools` features should match `amneziawg-linux-kernel-module` features, i.e. choose two corresponding commits in both repos.
-5. Go to Actions (enable them is needed).
+4. Optional: update/change commit hashes (`PKG_SOURCE_VERSION` variable) of the upstream repos in `amneziawg-tools/Makefile`, `kmod-amneziawg/Makefile` and `amneziawg-go/Makefile` files. Remember that `amneziawg-tools` features should match `amneziawg-linux-kernel-module` features, i.e. choose two corresponding commits in both repos.
+5. Go to Actions (enable them if not available).
 6. Choose `Build OpenWrt toolchain cache`, put your router parameters (from step 1) in the `Run workflow` menu and run the job.
 7. It will take ~2-2.5 hours to build the cache. So get some cookies, tea, your favorite book and wait.
 8. After the cache has been created, choose `Build AmneziaWG from cache` job, put the same parameters in the `Run workflow` menu and run it.
@@ -49,12 +57,12 @@ General steps:
    - Via WebInterface (LuCi):
        - Go to `System -> Software` menu.
        - Press `Upload Package...`
-       - Select kmod-amneziawg .ipk file.
+       - Select `kmod-amneziawg` or `amneziawg-go` .ipk file.
        - Confirm installation.
-       - Repeat those steps for amneziawg-tools .ipk file and then luci-proto-amneziawg .ipk file.
+       - Repeat those steps for `amneziawg-tools` .ipk file and then `luci-proto-amneziawg` .ipk file.
    - Via console:
        - Transfer files into the router.
-       - Run `apk install {path to the kmod-amneziawg .ipk}` or `opkg install {path to the kmod-amneziawg .ipk}` depending on your package manager.
+       - Run `apk install {path to the kmod-amneziawg or amneziawg-go .ipk}` or `opkg install {path to the kmod-amneziawg or amneziawg-go .ipk}` depending on your package manager.
        - Run `apk install {path to the amneziawg-tools .ipk}` or `opkg install {path to the amneziawg-tools .ipk}` depending on your package manager.
        - Run `apk install {path to the luci-proto-amneziawg .ipk}` or `opkg install {path to the luci-proto-amneziawg .ipk}` depending on your package manager.
 11. Reboot router or run `/etc/init.d/network restart` command in the console.
