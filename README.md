@@ -1,6 +1,6 @@
 # YAAWG: Yet another AmneziaWG variation for OpenWrt
 
-This project is aimed to update sources of the initial AmneziaWG and make them as close to four upstream projects ([luci-proto-wireguard](https://github.com/openwrt/luci/tree/master/protocols/luci-proto-wireguard), [amneziawg-tools](https://github.com/amnezia-vpn/amneziawg-tools/), [amneziawg-linux-kernel-module](https://github.com/amnezia-vpn/amneziawg-linux-kernel-module), [amneziawg-go](https://github.com/amnezia-vpn/amneziawg-go) as possible.
+This project is aimed to update sources of the initial AmneziaWG and make them as close to four upstream projects ([luci-proto-wireguard](https://github.com/openwrt/luci/tree/master/protocols/luci-proto-wireguard), [amneziawg-tools](https://github.com/amnezia-vpn/amneziawg-tools/), [amneziawg-linux-kernel-module](https://github.com/amnezia-vpn/amneziawg-linux-kernel-module), [amneziawg-go](https://github.com/amnezia-vpn/amneziawg-go)) as possible.
 
 Why? Because it looks like the original repository is abandoned: more than half a year has passed since the last commit and no bugs were fixed while two upstream projects receive updates on a regular basis (at least from the community).
 
