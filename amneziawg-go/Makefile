@@ -3,14 +3,14 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=amneziawg-go
-PKG_VERSION:=1.0.20250721
+PKG_VERSION:=1.0.20250812
 PKG_RELEASE:=1
 
 PKG_SOURCE_PROTO:=git
 PKG_SOURCE_URL:=https://github.com/amnezia-vpn/amneziawg-go.git
 # Version: v0.2.14-beta-awg-1.5-1
 PKG_SOURCE_VERSION:=15d7259cd45f41d50bc5838dc002698362f29a2d
-PKG_MIRROR_HASH:=skip
+PKG_MIRROR_HASH:=9e41fdcc1a954893eb6350ddcd2c590f7a407a128ae9723f7be08ac142ba9087
 
 PKG_BUILD_DEPENDS:=golang/host
 PKG_BUILD_PARALLEL:=1

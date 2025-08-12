@@ -6,9 +6,9 @@
 'require ui';
 
 
-var callGetWgInstances = rpc.declare({
+var callgetAwgInstances = rpc.declare({
 	object: 'luci.amneziawg',
-	method: 'getWgInstances'
+	method: 'getAwgInstances'
 });
 
 function timestampToStr(timestamp) {
@@ -153,7 +153,7 @@ return view.extend({
 
 	render: function() {
 		poll.add(L.bind(function () {
-			return callGetWgInstances().then(L.bind(function(ifaces) {
+			return callgetAwgInstances().then(L.bind(function(ifaces) {
 				dom.content(
 					document.querySelector('#view'),
 					this.renderIfaces(ifaces)

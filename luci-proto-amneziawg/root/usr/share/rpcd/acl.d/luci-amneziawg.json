@@ -4,7 +4,7 @@
 		"read": {
 			"ubus": {
 				"luci.amneziawg": [
-					"getWgInstances"
+					"getAwgInstances"
 				]
 			},
 			"uci": [ "ddns", "system", "network" ]
