@@ -57,7 +57,7 @@ const methods = {
 		}
 	},
 
-	getWgInstances: {
+	getAwgInstances: {
 		call: function() {
 			const data = {};
 			let last_device;
