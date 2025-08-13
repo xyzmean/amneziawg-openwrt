@@ -73,12 +73,6 @@ msgstr "Размер мусорного заголовка пакета иниц
 msgid "Handshake response packet junk header size."
 msgstr "Размер мусорного заголовка пакета ответа на рукопожатие."
 
-msgid "Cookie reply packet junk header size."
-msgstr "Размер мусорного заголовка пакета ответа cookie."
-
-msgid "Transport packet junk header size."
-msgstr "Размер мусорного заголовка транспортного пакета."
-
 msgid "Handshake initiation packet type header."
 msgstr "Тип заголовка пакета инициации рукопожатия."
 

@@ -26,8 +26,6 @@ proto_amneziawg_init_config() {
 	proto_config_add_int "awg_jmax"
 	proto_config_add_int "awg_s1"
 	proto_config_add_int "awg_s2"
-	proto_config_add_int "awg_s3"
-	proto_config_add_int "awg_s4"
 	proto_config_add_int "awg_h1"
 	proto_config_add_int "awg_h2"
 	proto_config_add_int "awg_h3"
@@ -183,8 +181,6 @@ proto_amneziawg_setup() {
 	local awg_jmax
 	local awg_s1
 	local awg_s2
-	local awg_s3
-	local awg_s4
 	local awg_h1
 	local awg_h2
 	local awg_h3
@@ -216,8 +212,6 @@ proto_amneziawg_setup() {
 	config_get awg_jmax "${config}" "awg_jmax"
 	config_get awg_s1 "${config}" "awg_s1"
 	config_get awg_s2 "${config}" "awg_s2"
-	config_get awg_s3 "${config}" "awg_s3"
-	config_get awg_s4 "${config}" "awg_s4"
 	config_get awg_h1 "${config}" "awg_h1"
 	config_get awg_h2 "${config}" "awg_h2"
 	config_get awg_h3 "${config}" "awg_h3"
@@ -287,15 +281,9 @@ proto_amneziawg_setup() {
 		echo "H4=${awg_h4}" >> "${awg_cfg}"
 	fi
 	if proto_amneziawg_is_kernel_mode; then
-		logger -t "amneziawg" "info: ignoring v1.5 parameters (S3-S4; I1-I5; J1-J3; ITIME) - they are not supported in the kernel module"
+		logger -t "amneziawg" "info: ignoring v1.5+ parameters (I1-I5; J1-J3 and ITIME) - they are not supported in the kernel module"
 	else
-		logger -t "amneziawg" "info: adding v1.5 parameters (S3-S4; I1-I5; J1-J3; ITIME)"
-		if [ "${awg_s3}" ]; then
-			echo "S3=${awg_s3}" >> "${awg_cfg}"
-		fi
-		if [ "${awg_s4}" ]; then
-			echo "S4=${awg_s4}" >> "${awg_cfg}"
-		fi
+		logger -t "amneziawg" "info: adding v1.5+ parameters (I1-I5; J1-J3 and ITIME)"
 		if [ "${awg_i1}" ]; then
 			echo "I1=${awg_i1}" >> "${awg_cfg}"
 		fi

@@ -11,21 +11,21 @@ The main differences and objectives:
    - Added checkboxes to enable/disable peers.
    - Took `luci-proto-wireguard` as the codebase.
    - Added the correct icon for the interface.
-   - Added support for v1.5 protocol parameters: S3-S4, I1-I5, J1-J3, ITIME.
+   - Added support for v1.5+ protocol parameters: I1-I5, J1-J3, ITIME.
 3. `amneziawg-tools` has been aligned  in accordance with the upstream repo [amneziawg-tools](https://github.com/amnezia-vpn/amneziawg-tools/):
    - The package is now compiled based on the upstream repo. `feature/awg-fix` branch has been chosen as a reference.
    - Fixed bug with non-existent `proto_amneziawg_check_installed` method.
    - Changed temp folders and files to match the protocol name.
    - Refactored scripts a bit to make them look more `amneziish`.
    - Fixed bug with incorrect path when using `amneziawg-go`.
-   - Added support for v1.5 protocol parameters: S3-S4, I1-I5, J1-J3, ITIME.
+   - Added support for v1.5+ protocol parameters: I1-I5, J1-J3, ITIME.
 4. `kmod-amneziawg` is now compiled totally based on the upstream [amneziawg-linux-kernel-module](https://github.com/amnezia-vpn/amneziawg-linux-kernel-module) repo. Master branch has been chosen as a reference.
 5. `amneziawg-go` has been introduced in version `1.0.20250721` as a replacement for `kmod-amneziawg` because it seems that kernel module has been discontinued. Please check [this section](#kmod-amneziawg-vs-amneziawg-go) for more information. The Go implementation is also totally based on the upstream project [amneziawg-go](https://github.com/amnezia-vpn/amneziawg-go). `v0.2.14-beta-awg-1.5-1` tag has been chosen as a reference.
 
 # `kmod-amneziawg` vs `amneziawg-go`
 It looks like that kernel module (`kmod-amneziawg`) has been discontinued while the userspace implementation written in Go language (amneziawg-go) receives updates on a regular basis. Thus I decided to include the userspace implementation in the repo. It is now possible to choose:
-1. Use `kmod-amneziawg`: it provides an older yet still working version of the protocol, but requires a less powerful device to run and consumes less space.
-1. Use `amneziawg-go`: it provides a newer version of the protocol (v1.5), but requires a more powerful device to run and consumes more space.
+1. Use `kmod-amneziawg`: it provides an older yet still working version of the protocol, but requires less powerful device to run and consumes less space.
+1. Use `amneziawg-go`: it provides a newer version of the protocol (v1.5+), but requires a more powerful device to run and consumes more space.
 
 Please choose and install only one implementation. If both implementations have been installed, `kmod-amneziawg` will be used by default.
 
@@ -39,7 +39,7 @@ Please note that this repository is primarily intended for compiling packages du
 1. Clone the OpenWrt repo by running `git clone https://github.com/openwrt/openwrt.git` command.
 2. Add line `src-git awgopenwrt https://github.com/this-username-has-been-taken/amneziawg-openwrt.git` to the `feeds.conf.default` file.
 3. Update package feeds by running `{path to openwrt dir}/scripts/feeds update -a` command.
-4. Install packages by running `{path to openwrt dir}/scripts/feeds install -a` command.
+4. Install packages by running `.{path to openwrt dir}/scripts/feeds install -a` command.
 5. Choose target, settings, other packages and AmneziaWG packages (`amneziawg-go` or `kmod-amneziawg` + `amneziawg-tools` + `luci-proto-amneziawg`) in the menuconfig by running `make -C {path to openwrt dir} menuconfig` command and save configuration.
 6. Make defconfig: `make -C {path to openwrt dir} defconfig`.
 7. Build the firmware: `make -C openwrt -j$(nproc) V=sc`.
