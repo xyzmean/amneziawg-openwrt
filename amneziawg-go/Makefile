@@ -27,7 +27,7 @@ define Package/amneziawg-go
   SECTION:=net
   CATEGORY:=Network
   TITLE:=AmneziaWG userspace implementation program (written in Go)
-  DEPENDS:=$(GO_ARCH_DEPENDS)
+  DEPENDS:=$(GO_ARCH_DEPENDS) +kmod-tun
 endef
 
 define Build/Compile
