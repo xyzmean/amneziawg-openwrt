@@ -224,6 +224,16 @@ return network.registerProtocol('amneziawg', {
         o.datatype = 'uinteger';
         o.placeholder = '0';
         o.optional = true;
+		
+		o = s.taboption('amneziawg', form.Value, 'awg_s3', _('S3'), _('Cookie reply packet junk header size.'));
+        o.datatype = 'uinteger';
+        o.placeholder = '0';
+        o.optional = true;
+		
+		o = s.taboption('amneziawg', form.Value, 'awg_s4', _('S4'), _('Transport packet junk header size.'));
+        o.datatype = 'uinteger';
+        o.placeholder = '0';
+        o.optional = true;
 
         o = s.taboption('amneziawg', form.Value, 'awg_h1', _('H1'), _('Handshake initiation packet type header.'));
         o.datatype = 'uinteger';
@@ -440,6 +450,8 @@ return network.registerProtocol('amneziawg', {
 					s.getOption('awg_jmax').getUIElement(s.section).setValue(config.awg_jmax);
 					s.getOption('awg_s1').getUIElement(s.section).setValue(config.awg_s1);
 					s.getOption('awg_s2').getUIElement(s.section).setValue(config.awg_s2);
+					s.getOption('awg_s3').getUIElement(s.section).setValue(config.awg_s3);
+					s.getOption('awg_s4').getUIElement(s.section).setValue(config.awg_s4);
 					s.getOption('awg_h1').getUIElement(s.section).setValue(config.awg_h1);
 					s.getOption('awg_h2').getUIElement(s.section).setValue(config.awg_h2);
 					s.getOption('awg_h3').getUIElement(s.section).setValue(config.awg_h3);
@@ -791,6 +803,8 @@ return network.registerProtocol('amneziawg', {
 				jmax = s.formvalue(s.section, 'awg_jmax'),
 				s1 = s.formvalue(s.section, 'awg_s1'),
 				s2 = s.formvalue(s.section, 'awg_s2'),
+				s3 = s.formvalue(s.section, 'awg_s3'),
+				s4 = s.formvalue(s.section, 'awg_s4'),
 				h1 = s.formvalue(s.section, 'awg_h1'),
 				h2 = s.formvalue(s.section, 'awg_h2'),
 				h3 = s.formvalue(s.section, 'awg_h3'),
@@ -825,6 +839,8 @@ return network.registerProtocol('amneziawg', {
 				jmax ? 'Jmax = ' + jmax : '# Jmax not defined',
 				s1 ? 'S1 = ' + s1 : '# S1 not defined',
 				s2 ? 'S2 = ' + s2 : '# S2 not defined',
+				s3 ? 'S3 = ' + s3 : '# S3 not defined',
+				s4 ? 'S4 = ' + s4 : '# S4 not defined',
 				h1 ? 'H1 = ' + h1 : '# H1 not defined',
 				h2 ? 'H2 = ' + h2 : '# H2 not defined',
 				h3 ? 'H3 = ' + h3 : '# H3 not defined',
