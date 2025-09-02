@@ -1,13 +1,13 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=amneziawg-tools
-PKG_VERSION:=1.0.20250813
+PKG_VERSION:=1.0.20250901
 PKG_RELEASE:=1
 
 PKG_SOURCE_PROTO:=git
 PKG_SOURCE_URL:=https://github.com/amnezia-vpn/amneziawg-tools.git
 # Version: feature/awg-fix branch
-PKG_SOURCE_VERSION:=a8ca46755f4dbaae07a12281e711a32eaa37ac91
+PKG_SOURCE_VERSION:=5e882890fbca2316f8ca40e992789d24f67f0118
 PKG_MIRROR_HASH:=2c52f992b08bfc4d771a91b004e4f4a98f4c614fb569fa849cb6193e27b48b31
 
 PKG_LICENSE:=GPL-2.0
