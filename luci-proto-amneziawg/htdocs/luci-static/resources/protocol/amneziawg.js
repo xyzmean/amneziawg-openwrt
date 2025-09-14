@@ -236,22 +236,22 @@ return network.registerProtocol('amneziawg', {
         o.optional = true;
 
         o = s.taboption('amneziawg', form.Value, 'awg_h1', _('H1'), _('Handshake initiation packet type header.'));
-        o.datatype = 'uinteger';
+        o.datatype = 'string';
         o.placeholder = '1';
         o.optional = true;
 
         o = s.taboption('amneziawg', form.Value, 'awg_h2', _('H2'), _('Handshake response packet type header.'));
-        o.datatype = 'uinteger';
+        o.datatype = 'string';
         o.placeholder = '2';
         o.optional = true;
 
         o = s.taboption('amneziawg', form.Value, 'awg_h3', _('H3'), _('Handshake cookie packet type header.'));
-        o.datatype = 'uinteger';
+        o.datatype = 'string';
         o.placeholder = '3';
         o.optional = true;
 
         o = s.taboption('amneziawg', form.Value, 'awg_h4', _('H4'), _('Transport packet type header.'));
-        o.datatype = 'uinteger';
+        o.datatype = 'string';
         o.placeholder = '4';
         o.optional = true;
 		
@@ -273,23 +273,6 @@ return network.registerProtocol('amneziawg', {
 		
 		o = s.taboption('amneziawg', form.Value, 'awg_i5', _('I5'), _('Fifth special junk packet signature.'));
         o.datatype = 'string';
-        o.optional = true;
-		
-		o = s.taboption('amneziawg', form.Value, 'awg_j1', _('J1'), _('First controlled junk packet signature.'));
-        o.datatype = 'string';
-        o.optional = true;
-		
-		o = s.taboption('amneziawg', form.Value, 'awg_j2', _('J2'), _('Second controlled junk packet signature.'));
-        o.datatype = 'string';
-        o.optional = true;
-		
-		o = s.taboption('amneziawg', form.Value, 'awg_j3', _('J3'), _('Third controlled junk packet signature.'));
-        o.datatype = 'string';
-        o.optional = true;
-		
-		o = s.taboption('amneziawg', form.Value, 'awg_itime', _('ITIME'), _('Special handshake timeout.'));
-        o.datatype = 'uinteger';
-		o.placeholder = '0';
         o.optional = true;
 
 		// -- peers -----------------------------------------------------------------------
@@ -461,10 +444,6 @@ return network.registerProtocol('amneziawg', {
 					s.getOption('awg_i3').getUIElement(s.section).setValue(config.awg_i3);
 					s.getOption('awg_i4').getUIElement(s.section).setValue(config.awg_i4);
 					s.getOption('awg_i5').getUIElement(s.section).setValue(config.awg_i5);
-					s.getOption('awg_j1').getUIElement(s.section).setValue(config.awg_j1);
-					s.getOption('awg_j2').getUIElement(s.section).setValue(config.awg_j2);
-					s.getOption('awg_j3').getUIElement(s.section).setValue(config.awg_j3);
-					s.getOption('awg_itime').getUIElement(s.section).setValue(config.awg_itime);
 
 					if (config.interface_dns)
 						s.getOption('dns').getUIElement(s.section).setValue(config.interface_dns);
@@ -814,10 +793,6 @@ return network.registerProtocol('amneziawg', {
 				i3 = s.formvalue(s.section, 'awg_i3'),
 				i4 = s.formvalue(s.section, 'awg_i4'),
 				i5 = s.formvalue(s.section, 'awg_i5'),
-				j1 = s.formvalue(s.section, 'awg_j1'),
-				j2 = s.formvalue(s.section, 'awg_j2'),
-				j3 = s.formvalue(s.section, 'awg_j3'),
-				itime = s.formvalue(s.section, 'awg_itime'),
 			    prv = this.section.formvalue(section_id, 'private_key'),
 			    psk = this.section.formvalue(section_id, 'preshared_key'),
 			    eport = this.section.formvalue(section_id, 'endpoint_port'),
@@ -850,10 +825,6 @@ return network.registerProtocol('amneziawg', {
 				i3 ? 'I3 = ' + i3 : '# I3 not defined',
 				i4 ? 'I4 = ' + i4 : '# I4 not defined',
 				i5 ? 'I5 = ' + i5 : '# I5 not defined',
-				j1 ? 'J1 = ' + j1 : '# J1 not defined',
-				j2 ? 'J2 = ' + j2 : '# J2 not defined',
-				j3 ? 'J3 = ' + j3 : '# J3 not defined',
-				itime ? 'ITIME = ' + itime : '# ITIME not defined',
 				'',
 				'[Peer]',
 				'PublicKey = ' + pub,

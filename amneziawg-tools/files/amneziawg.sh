@@ -28,19 +28,15 @@ proto_amneziawg_init_config() {
 	proto_config_add_int "awg_s2"
 	proto_config_add_int "awg_s3"
 	proto_config_add_int "awg_s4"
-	proto_config_add_int "awg_h1"
-	proto_config_add_int "awg_h2"
-	proto_config_add_int "awg_h3"
-	proto_config_add_int "awg_h4"
+	proto_config_add_string "awg_h1"
+	proto_config_add_string "awg_h2"
+	proto_config_add_string "awg_h3"
+	proto_config_add_string "awg_h4"
 	proto_config_add_string "awg_i1"
 	proto_config_add_string "awg_i2"
 	proto_config_add_string "awg_i3"
 	proto_config_add_string "awg_i4"
 	proto_config_add_string "awg_i5"
-	proto_config_add_string "awg_j1"
-	proto_config_add_string "awg_j2"
-	proto_config_add_string "awg_j3"
-	proto_config_add_int "awg_itime"
 # shellcheck disable=SC2034
 	available=1
 # shellcheck disable=SC2034
@@ -194,10 +190,6 @@ proto_amneziawg_setup() {
 	local awg_i3
 	local awg_i4
 	local awg_i5
-	local awg_j1
-	local awg_j2
-	local awg_j3
-	local awg_itime
 
 	ensure_key_is_generated "${config}"
 
@@ -227,10 +219,6 @@ proto_amneziawg_setup() {
 	config_get awg_i3 "${config}" "awg_i3"
 	config_get awg_i4 "${config}" "awg_i4"
 	config_get awg_i5 "${config}" "awg_i5"
-	config_get awg_j1 "${config}" "awg_j1"
-	config_get awg_j2 "${config}" "awg_j2"
-	config_get awg_j3 "${config}" "awg_j3"
-	config_get awg_itime "${config}" "awg_itime"
 
 	if proto_amneziawg_is_kernel_mode; then
 		logger -t "amneziawg" "info: using kernel-space kmod-amneziawg for ${AWG}"
@@ -274,6 +262,12 @@ proto_amneziawg_setup() {
 	if [ "${awg_s2}" ]; then
 		echo "S2=${awg_s2}" >> "${awg_cfg}"
 	fi
+	if [ "${awg_s3}" ]; then
+		echo "S3=${awg_s3}" >> "${awg_cfg}"
+	fi
+	if [ "${awg_s4}" ]; then
+		echo "S4=${awg_s4}" >> "${awg_cfg}"
+	fi
 	if [ "${awg_h1}" ]; then
 		echo "H1=${awg_h1}" >> "${awg_cfg}"
 	fi
@@ -286,43 +280,20 @@ proto_amneziawg_setup() {
 	if [ "${awg_h4}" ]; then
 		echo "H4=${awg_h4}" >> "${awg_cfg}"
 	fi
-	if proto_amneziawg_is_kernel_mode; then
-		logger -t "amneziawg" "info: ignoring v1.5 parameters (S3-S4; I1-I5; J1-J3; ITIME) - they are not supported in the kernel module"
-	else
-		logger -t "amneziawg" "info: adding v1.5 parameters (S3-S4; I1-I5; J1-J3; ITIME)"
-		if [ "${awg_s3}" ]; then
-			echo "S3=${awg_s3}" >> "${awg_cfg}"
-		fi
-		if [ "${awg_s4}" ]; then
-			echo "S4=${awg_s4}" >> "${awg_cfg}"
-		fi
-		if [ "${awg_i1}" ]; then
-			echo "I1=${awg_i1}" >> "${awg_cfg}"
-		fi
-		if [ "${awg_i2}" ]; then
-			echo "I2=${awg_i2}" >> "${awg_cfg}"
-		fi
-		if [ "${awg_i3}" ]; then
-			echo "I3=${awg_i3}" >> "${awg_cfg}"
-		fi
-		if [ "${awg_i4}" ]; then
-			echo "I4=${awg_i4}" >> "${awg_cfg}"
-		fi
-		if [ "${awg_i5}" ]; then
-			echo "I5=${awg_i5}" >> "${awg_cfg}"
-		fi
-		if [ "${awg_j1}" ]; then
-			echo "J1=${awg_j1}" >> "${awg_cfg}"
-		fi
-		if [ "${awg_j2}" ]; then
-			echo "J2=${awg_j2}" >> "${awg_cfg}"
-		fi
-		if [ "${awg_j3}" ]; then
-			echo "J3=${awg_j3}" >> "${awg_cfg}"
-		fi	
-		if [ "${awg_itime}" ]; then
-			echo "ITIME=${awg_itime}" >> "${awg_cfg}"
-		fi
+	if [ "${awg_i1}" ]; then
+		echo "I1=${awg_i1}" >> "${awg_cfg}"
+	fi
+	if [ "${awg_i2}" ]; then
+		echo "I2=${awg_i2}" >> "${awg_cfg}"
+	fi
+	if [ "${awg_i3}" ]; then
+		echo "I3=${awg_i3}" >> "${awg_cfg}"
+	fi
+	if [ "${awg_i4}" ]; then
+		echo "I4=${awg_i4}" >> "${awg_cfg}"
+	fi
+	if [ "${awg_i5}" ]; then
+		echo "I5=${awg_i5}" >> "${awg_cfg}"
 	fi
 	config_foreach proto_amneziawg_setup_peer "amneziawg_${config}"
 

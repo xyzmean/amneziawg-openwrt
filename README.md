@@ -2,7 +2,7 @@
 
 This project is aimed to update sources of the initial AmneziaWG and make them as close to four upstream projects ([luci-proto-wireguard](https://github.com/openwrt/luci/tree/master/protocols/luci-proto-wireguard), [amneziawg-tools](https://github.com/amnezia-vpn/amneziawg-tools/), [amneziawg-linux-kernel-module](https://github.com/amnezia-vpn/amneziawg-linux-kernel-module), [amneziawg-go](https://github.com/amnezia-vpn/amneziawg-go)) as possible.
 
-Why? Because it looks like the original repository is abandoned: more than half a year has passed since the last commit and no bugs were fixed while two upstream projects receive updates on a regular basis (at least from the community).
+Why? Because it looks like the original repository is abandoned: more than half a year has passed since the last commit, no bugs were fixed and no new protocol versions support were added while three upstream projects receive updates on a regular basis (at least from the community).
 
 The main differences and objectives:
 1. `luci-proto-amneziawg` has been aligned in accordance with [luci-proto-wireguard](https://github.com/openwrt/luci/tree/master/protocols/luci-proto-wireguard):
@@ -11,22 +11,27 @@ The main differences and objectives:
    - Added checkboxes to enable/disable peers.
    - Took `luci-proto-wireguard` as the codebase.
    - Added the correct icon for the interface.
-   - Added support for v1.5 protocol parameters: S3-S4, I1-I5, J1-J3, ITIME.
+   - Added support for ranged H1-H4 parameters (with `-` delimiter, e.x. `123456-123500`).
+   - Added support for v2.0 protocol parameters: S3-S4, I1-I5.
 3. `amneziawg-tools` has been aligned  in accordance with the upstream repo [amneziawg-tools](https://github.com/amnezia-vpn/amneziawg-tools/):
-   - The package is now compiled based on the upstream repo. `feature/awg-fix` branch has been chosen as a reference.
+   - The package is now compiled based on the upstream repo.
    - Fixed bug with non-existent `proto_amneziawg_check_installed` method.
    - Changed temp folders and files to match the protocol name.
    - Refactored scripts a bit to make them look more `amneziish`.
    - Fixed bug with incorrect path when using `amneziawg-go`.
-   - Added support for v1.5 protocol parameters: S3-S4, I1-I5, J1-J3, ITIME.
-4. `kmod-amneziawg` is now compiled totally based on the upstream [amneziawg-linux-kernel-module](https://github.com/amnezia-vpn/amneziawg-linux-kernel-module) repo. Master branch has been chosen as a reference.
-5. `amneziawg-go` has been introduced in version `1.0.20250721` as a replacement for `kmod-amneziawg` because it seems that kernel module has been discontinued. Please check [this section](#kmod-amneziawg-vs-amneziawg-go) for more information. The Go implementation is also totally based on the upstream project [amneziawg-go](https://github.com/amnezia-vpn/amneziawg-go). `v0.2.14-beta-awg-1.5-1` tag has been chosen as a reference.
+   - Added support for ranged H1-H4 parameters (with `-` delimiter, e.x. `123456-123500`).
+   - Added support for v2.0 protocol parameters: S3-S4, I1-I5.
+4. `kmod-amneziawg` is now compiled totally based on the upstream [amneziawg-linux-kernel-module](https://github.com/amnezia-vpn/amneziawg-linux-kernel-module) repo.
+   - Added support for v2.0 protocol parameters: S3-S4, I1-I5.
+5. `amneziawg-go` has been introduced in YAWG version `1.0.20250721` as an alternative for `kmod-amneziawg`. Please check [this section](#kmod-amneziawg-vs-amneziawg-go) for more information. The Go implementation is also totally based on the upstream project [amneziawg-go](https://github.com/amnezia-vpn/amneziawg-go).
 
 # `kmod-amneziawg` vs `amneziawg-go`
-It looks like that kernel module (`kmod-amneziawg`) has been discontinued while the userspace implementation written in Go language (amneziawg-go) receives updates on a regular basis. Thus I decided to include the userspace implementation in the repo. It is now possible to choose:
-1. Use `kmod-amneziawg`: it provides an older yet still working version of the protocol, but requires a less powerful device to run and consumes less space.
-1. Use `amneziawg-go`: it provides a newer version of the protocol (v1.5), but requires a more powerful device to run and consumes more space.
+When AmneziaWG authors first introduced v1.5 protocol it was supported only in the Go implementation. Thus user namespace (Go) implementation was added to the repo in order to support a newer version of the protocol. After that v2.0 protocol support has been added to the kernel module implementation. To keep backwards compatibility this repo will continue to support both Go and kernel module implementation.
+The differences are:
+1. `kmod-amneziawg`: requires a less powerful device to run and consumes less space, but it still is in the beta state. Use at your own risk.
+2. `amneziawg-go`: requires a more powerful device to run and consumes more space, but provides user namespace implementation of the protocol.
 
+It is recommended to use `amneziawg-go` implementation because the kernel module is still in the beta state and might not work as expected.
 Please choose and install only one implementation. If both implementations have been installed, `kmod-amneziawg` will be used by default.
 
 # Results
@@ -72,14 +77,14 @@ General steps:
    - Via WebInterface (LuCi):
        - Go to `System -> Software` menu.
        - Press `Upload Package...`
-       - Select `kmod-amneziawg` or `amneziawg-go` .ipk file.
+       - Select `kmod-amneziawg` or `amneziawg-go` .ipk/.apk file.
        - Confirm installation.
-       - Repeat those steps for `amneziawg-tools` .ipk file and then `luci-proto-amneziawg` .ipk file.
+       - Repeat those steps for `amneziawg-tools` .ipk/.apk file and then `luci-proto-amneziawg` .ipk/.apk file.
    - Via console:
        - Transfer files into the router.
-       - Run `apk install {path to the kmod-amneziawg or amneziawg-go .ipk}` or `opkg install {path to the kmod-amneziawg or amneziawg-go .ipk}` depending on your package manager.
-       - Run `apk install {path to the amneziawg-tools .ipk}` or `opkg install {path to the amneziawg-tools .ipk}` depending on your package manager.
-       - Run `apk install {path to the luci-proto-amneziawg .ipk}` or `opkg install {path to the luci-proto-amneziawg .ipk}` depending on your package manager.
+       - Run `apk install {path to the kmod-amneziawg or amneziawg-go .ipk/.apk}` or `opkg install {path to the kmod-amneziawg or amneziawg-go .ipk/.apk}` depending on your package manager.
+       - Run `apk install {path to the amneziawg-tools .ipk/.apk}` or `opkg install {path to the amneziawg-tools .ipk/.apk}` depending on your package manager.
+       - Run `apk install {path to the luci-proto-amneziawg .ipk/.apk}` or `opkg install {path to the luci-proto-amneziawg .ipk/.apk}` depending on your package manager.
 11. Reboot router or run `/etc/init.d/network restart` command in the console.
 12. Congratulations - you now have AmneziaWG installed on your router. Go to `Network -> Interfaces` page, press `Add new interface..` and select `AmneziaWG` as protocol.
 
