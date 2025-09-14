@@ -2,15 +2,15 @@ include $(TOPDIR)/rules.mk
 include $(INCLUDE_DIR)/kernel.mk
 
 PKG_NAME:=kmod-amneziawg
-PKG_VERSION:=1.0.20250813
+PKG_VERSION:=2.0.20250914
 PKG_RELEASE:=1
 WIREGUARD_VERSION:=1.0.0
 
 PKG_SOURCE_PROTO:=git
 PKG_SOURCE_URL:=https://github.com/amnezia-vpn/amneziawg-linux-kernel-module.git
-# Version: master branch
-PKG_SOURCE_VERSION:=b91fabacfa5ef75ecf82d9c6fbf1df83fb403b57
-PKG_MIRROR_HASH:=5630f6f73fd96926f9703b73ff83b9c416119e92257b7a752d98981045590c3f
+# Reference: feature/awg2 branch
+PKG_SOURCE_VERSION:=270e1ddc45267de10b57e583cd705adaadf0df0a
+PKG_MIRROR_HASH:=18db7d1bd2786d82ee1ddaa6fa6ebb8470bfda33170328967604f338df59e793
 
 PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_NAME)-$(PKG_VERSION)
 MAKE_PATH:=src
@@ -22,7 +22,7 @@ define KernelPackage/amneziawg
 	CATEGORY:=Kernel modules
 	SUBMENU:=Network Support
 	TITLE:=AmneziaWG VPN Kernel Module
-	FILES:=$(PKG_BUILD_DIR)/$(MAKE_PATH)/generated/amneziawg.ko
+	FILES:=$(PKG_BUILD_DIR)/$(MAKE_PATH)/amneziawg.ko
 	DEPENDS:= \
 		+kmod-udptunnel4 \
 		+kmod-udptunnel6 \
@@ -37,8 +37,7 @@ define Build/Prepare
 endef
 
 define Build/Compile
-	$(MAKE_VARS) $(MAKE) $(PKG_JOBS) -C $(PKG_BUILD_DIR)/$(MAKE_PATH) $(MAKE_FLAGS) apply-patches
-	$(MAKE_VARS) $(MAKE) -C "$(LINUX_DIR)" $(KERNEL_MAKE_FLAGS) M="$(PKG_BUILD_DIR)/$(MAKE_PATH)/generated" EXTRA_CFLAGS="$(BUILDFLAGS)" WIREGUARD_VERSION="$(WIREGUARD_VERSION)" modules
+	$(MAKE_VARS) $(MAKE) -C "$(LINUX_DIR)" $(KERNEL_MAKE_FLAGS) M="$(PKG_BUILD_DIR)/$(MAKE_PATH)" EXTRA_CFLAGS="$(BUILDFLAGS)" WIREGUARD_VERSION="$(WIREGUARD_VERSION)" modules
 endef
 
 $(eval $(call KernelPackage,amneziawg))

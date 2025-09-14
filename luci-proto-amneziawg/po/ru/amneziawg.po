@@ -106,18 +106,6 @@ msgstr "Сигнатура четвертого special junk пакета."
 msgid "Fifth special junk packet signature."
 msgstr "Сигнатура пятого special junk пакета."
 
-msgid "First controlled junk packet signature."
-msgstr "Сигнатура первого controlled junk пакета."
-
-msgid "Second controlled junk packet signature."
-msgstr "Сигнатура второго controlled junk пакета."
-
-msgid "Third controlled junk packet signature."
-msgstr "Сигнатура третьего controlled junk пакета."
-
-msgid "Special handshake timeout."
-msgstr "Таймаут special handshake."
-
 msgid "Enable / Disable peer. Restart amneziawg interface to apply changes."
 msgstr ""
 "Включить/выключить узел. Перезапустите интерфейс AmneziaWG, чтобы применить "
