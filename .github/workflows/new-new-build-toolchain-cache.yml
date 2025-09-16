@@ -81,10 +81,10 @@ jobs:
           bash openwrt/scripts/feeds update -a
 
       - name: Update Go version
-          if: ${{ inputs.update_go }}
-          run: |
-            rm -r openwrt/feeds/packages/lang/golang
-            cp -r packages/lang/golang openwrt/feeds/packages/lang
+        if: ${{ inputs.update_go }}
+        run: |
+          rm -r openwrt/feeds/packages/lang/golang
+          cp -r packages/lang/golang openwrt/feeds/packages/lang
 
       - name: Build toolchain and kernel
         run: |
