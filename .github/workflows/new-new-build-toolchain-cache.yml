@@ -67,6 +67,7 @@ jobs:
           
       - name: Update feeds
         run: |
+          set -e -x
           cd openwrt
           if [ "${{ inputs.openwrt_version }}" = "SNAPSHOT" ]; then
             BASE_URL="https://downloads.openwrt.org/snapshots/targets/$OPENWRT_TARGET/$OPENWRT_SUBTARGET"
@@ -78,18 +79,20 @@ jobs:
           echo "CONFIG_PACKAGE_kmod-crypto-lib-chacha20=m" >> .conf
           echo "CONFIG_PACKAGE_kmod-crypto-lib-chacha20poly1305=m" >> .conf
           echo "CONFIG_PACKAGE_kmod-crypto-chacha20poly1305=m" >> .conf
-          bash scripts/feeds update -a
+          ./scripts/feeds update -a
 
       - name: Update Go version
         if: ${{ inputs.update_go }}
         run: |
+          set -e -x
           rm -r openwrt/feeds/packages/lang/golang
           cp -r packages/lang/golang openwrt/feeds/packages/lang
 
       - name: Build toolchain and kernel
         run: |
+          set -e -x
           cd openwrt
-          bash scripts/feeds install -a
+          ./scripts/feeds install -a
           make defconfig
           make tools/install -j$(nproc)
           make toolchain/install -j$(nproc)
