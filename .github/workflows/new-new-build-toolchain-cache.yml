@@ -98,9 +98,9 @@ jobs:
           make toolchain/install -j$(nproc)
           make target/linux/compile -j$(nproc)
           export LC_ALL=C
-          for deadlink in $$(find . -follow -type l -printf "" 2>&1 | sed -e "s/find: '\(.*\)': Too many levels of symbolic links.*/\1/"); do
-            echo "deleting dead link: $${deadlink}"
-            rm -f "$${deadlink}"
+          for deadlink in $(find . -follow -type l -printf "" 2>&1 | sed -e "s/find: '\(.*\)': Too many levels of symbolic links.*/\1/"); do
+            echo "Deleting dead link: ${deadlink}"
+            rm -f "${deadlink}"
           done
 
       - name: Save toolchain and kernel cache
