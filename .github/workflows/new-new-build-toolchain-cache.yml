@@ -1,0 +1,118 @@
+name: NEW - Build OpenWrt toolchain cache
+on:
+  workflow_dispatch:
+    inputs:
+      openwrt_version:
+        description: "OpenWrt version"
+        type: string
+        required: true
+        default: "SNAPSHOT"
+      amneziawg_version:
+        description: "AmneziaWG version"
+        type: string
+        required: true
+        default: "master"
+      openwrt_arch:
+        description: "OpenWrt arch"
+        type: string
+        required: true
+        default: "aarch64_cortex-a53"
+      openwrt_target:
+        description: "OpenWrt target"
+        type: string
+        required: true
+        default: "mediatek"
+      openwrt_subtarget:
+        description: "OpenWrt subtarget"
+        type: string
+        required: true
+        default: "filogic"
+      update_go:
+        description: "Update Go version"
+        type: boolean
+        required: true
+        default: true
+
+jobs:
+  build-toolchain:
+    name: "Build toolchain cache for OpenWrt: ${{ matrix.build_env.tag }} - ${{ matrix.build_env.pkgarch }} :: ${{ matrix.build_env.target }}/${{ matrix.build_env.subtarget }}"
+    runs-on: ubuntu-22.04
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - name: Checkout YAAWG repository
+        uses: actions/checkout@v5
+        with:
+          path: amneziawg
+          ref: ${{ inputs.amneziawg_version }}
+          fetch-depth: 0
+      
+      - name: Checkout OpenWrt repository
+        if: ${{ inputs.update_go }}
+        uses: actions/checkout@v5
+        with:
+          path: openwrt
+          repository: openwrt/openwrt
+          ref: ${{ inputs.openwrt_version == 'SNAPSHOT' && 'master' || inputs.openwrt_version }}
+          fetch-depth: 0
+      
+      - name: Checkout OpenWRT Packages repository
+        uses: actions/checkout@v5
+        if: ${{ inputs.update_go }}
+        with:
+          path: packages
+          repository: openwrt/packages
+          fetch-depth: 0
+          
+      - name: Update feeds
+        run: |
+          cd openwrt
+          if [ "${{ inputs.openwrt_version }}" = "SNAPSHOT" ]; then
+            BASE_URL="https://downloads.openwrt.org/snapshots/targets/$OPENWRT_TARGET/$OPENWRT_SUBTARGET"
+          else
+            BASE_URL="https://downloads.openwrt.org/releases/$OPENWRT_RELEASE/targets/$OPENWRT_TARGET/$OPENWRT_SUBTARGET"
+          fi
+          echo "src-cpy awgopenwrt ${{ GITHUB_WORKSPACE }}/amneziawg" >> feeds.conf.default
+          curl -fsL "$BASE_URL/config.buildinfo" > .conf
+          echo "CONFIG_PACKAGE_kmod-crypto-lib-chacha20=m" >> .conf
+          echo "CONFIG_PACKAGE_kmod-crypto-lib-chacha20poly1305=m" >> .conf
+          echo "CONFIG_PACKAGE_kmod-crypto-chacha20poly1305=m" >> .conf
+          bash openwrt/scripts/feeds update -a
+
+      - name: Update Go version
+          if: ${{ inputs.update_go }}
+          run: |
+            rm -r openwrt/feeds/packages/lang/golang
+            cp -r packages/lang/golang openwrt/feeds/packages/lang
+
+      - name: Build toolchain and kernel
+        run: |
+          cd openwrt
+          bash scripts/feeds install -a
+          make defconfig
+          make tools/install -j$(nproc)
+          make toolchain/install -j$(nproc)
+          make target/linux/compile -j$(nproc)
+          export LC_ALL=C
+          for deadlink in $$(find . -follow -type l -printf "" 2>&1 | sed -e "s/find: '\(.*\)': Too many levels of symbolic links.*/\1/"); do
+            echo "deleting dead link: $${deadlink}"
+            rm -f "$${deadlink}"
+          done
+
+      - name: Save toolchain and kernel cache
+        id: cache-tools-kernel-save
+        uses: actions/cache/save@v4
+        with:
+          key: ${{ runner.os }}-openwrt-cache-toolchain-kernel-${{ inputs.openwrt_version }}-${{ inputs.openwrt_arch }}-${{ inputs.openwrt_target }}-${{ inputs.openwrt_subtarget }}
+          path: |
+            openwrt/.config
+            openwrt/.config.old
+            openwrt/feeds.conf
+            openwrt/bin/**
+            openwrt/build_dir/**
+            openwrt/dl/**
+            openwrt/feeds/**
+            openwrt/package/**
+            openwrt/staging_dir/**
+            openwrt/tmp/**
