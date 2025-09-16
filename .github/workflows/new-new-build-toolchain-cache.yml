@@ -70,11 +70,11 @@ jobs:
           set -e -x
           cd openwrt
           if [ "${{ inputs.openwrt_version }}" = "SNAPSHOT" ]; then
-            BASE_URL="https://downloads.openwrt.org/snapshots/targets/$OPENWRT_TARGET/$OPENWRT_SUBTARGET"
+            BASE_URL="https://downloads.openwrt.org/snapshots/targets/${{ inputs.openwrt_target }}/${{ inputs.openwrt_subtarget }}"
           else
-            BASE_URL="https://downloads.openwrt.org/releases/$OPENWRT_RELEASE/targets/$OPENWRT_TARGET/$OPENWRT_SUBTARGET"
+            BASE_URL="https://downloads.openwrt.org/releases/${{ inputs.openwrt_version }}/targets/${{ inputs.openwrt_target }}/${{ inputs.openwrt_subtarget }}"
           fi
-          echo "src-cpy awgopenwrt ${{ env.GITHUB_WORKSPACE }}/amneziawg" >> feeds.conf.default
+          echo "src-cpy awgopenwrt amneziawg" >> feeds.conf.default
           curl -fsL "$BASE_URL/config.buildinfo" > .conf
           echo "CONFIG_PACKAGE_kmod-crypto-lib-chacha20=m" >> .conf
           echo "CONFIG_PACKAGE_kmod-crypto-lib-chacha20poly1305=m" >> .conf
