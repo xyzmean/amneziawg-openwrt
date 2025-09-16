@@ -54,7 +54,7 @@ jobs:
         with:
           path: openwrt
           repository: openwrt/openwrt
-          ref: ${{ inputs.openwrt_version == 'SNAPSHOT' && 'master' || inputs.openwrt_version }}
+          ref: ${{ inputs.openwrt_version == 'SNAPSHOT' && 'master' || 'v' + inputs.openwrt_version }}
           fetch-depth: 0
       
       - name: Checkout OpenWRT Packages repository
