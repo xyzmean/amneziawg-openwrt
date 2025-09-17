@@ -1,4 +1,4 @@
-name: Build AmneziaWG packages
+name: Build OpenWrt toolchain cache
 on:
   workflow_dispatch:
     inputs:
@@ -34,8 +34,8 @@ on:
         default: true
 
 jobs:
-  build-amneziawg:
-    name: "Build AmneziaWG packages for OpenWrt: ${{ inputs.openwrt_version }} - ${{ inputs.openwrt_arch }} :: ${{ inputs.openwrt_target }}/${{ inputs.openwrt_subtarget }}"
+  build-toolchain-cache:
+    name: "Build AmneziaWG packages for OpenWrt: ${{ inputs.openwrt_version }} - ${{ inputs.openwrt_arch }} - ${{ inputs.openwrt_target }}/${{ inputs.openwrt_subtarget }}"
     runs-on: ubuntu-22.04
     defaults:
       run:
@@ -79,10 +79,6 @@ jobs:
           echo "CONFIG_PACKAGE_kmod-crypto-lib-chacha20=y" >> .config
           echo "CONFIG_PACKAGE_kmod-crypto-lib-chacha20poly1305=y" >> .config
           echo "CONFIG_PACKAGE_kmod-crypto-chacha20poly1305=y" >> .config
-          echo "CONFIG_PACKAGE_kmod-amneziawg=y" >> .config
-          echo "CONFIG_PACKAGE_amneziawg-go=y" >> .config
-          echo "CONFIG_PACKAGE_amneziawg-tools=y" >> .config
-          echo "CONFIG_PACKAGE_luci-proto-amneziawg=y" >> .config
           ./scripts/feeds update -a
 
       - name: Update Go version
@@ -93,6 +89,8 @@ jobs:
           cp -r packages/lang/golang openwrt/feeds/packages/lang
 
       - name: Build toolchain and kernel
+        env: 
+          update_go: ${{ inputs.update_go }}
         run: |
           set -e -x
           cd openwrt
@@ -101,26 +99,27 @@ jobs:
           make tools/install -j $(nproc)
           make toolchain/install -j $(nproc)
           make target/linux/compile -j $(nproc)
-
-      - name: Compile AmneziaWG packages
-        run: |
-          set -e -x
-          cd openwrt
-          make package/kmod-amneziawg/{clean,download,prepare,compile} -j $(nproc)
-          make package/amneziawg-go/{clean,download,prepare,compile} -j $(nproc)
-          make package/luci-proto-amneziawg/{clean,download,prepare,compile} -j $(nproc)
-          make package/amneziawg-tools/{clean,download,prepare,compile} -j $(nproc)
-
-      - name: Prepare artifacts
-        run: |
-          set -e -x
-          mkdir awgrelease
-          echo "vermagic=$(cat openwrt/build_dir/target-${{ inputs.openwrt_arch }}*/linux-${{ inputs.openwrt_target }}_${{ inputs.openwrt_subtarget }}/linux-*/.vermagic)" > awgrelease/vermagic
-          cp openwrt/bin/packages/${{ inputs.openwrt_arch }}/awgopenwrt/*.{ipk,apk} awgrelease
-          cp openwrt/bin/targets/${{ inputs.openwrt_arch }}/${{ inputs.openwrt_target }}/packages/kmod-amneziawg* awgrelease
-
-      - name: Upload artifacts
-        uses: actions/upload-artifact@v4
+          export LC_ALL=C
+          for deadlink in $(find . -follow -type l -printf "" 2>&1 | sed -e "s/find: '\(.*\)': Too many levels of symbolic links.*/\1/"); do
+            echo "Deleting dead link: ${deadlink}"
+            rm -f "${deadlink}"
+          done
+          echo "update_go=${{ env.update_go }}" >> vars.cache
+      
+      - name: Save toolchain and kernel cache
+        id: cache-tools-kernel-save
+        uses: actions/cache/save@v4
         with:
-          name: amneziawg-${{ inputs.openwrt_version }}_${{ inputs.openwrt_arch }}_${{ inputs.openwrt_target }}_${{ inputs.openwrt_subtarget }}
-          path: awgrelease/*
+          key: ${{ runner.os }}-openwrt-cache-toolchain-kernel-${{ inputs.openwrt_version }}-${{ inputs.openwrt_arch }}-${{ inputs.openwrt_target }}-${{ inputs.openwrt_subtarget }}
+          path: |
+            openwrt/.config
+            openwrt/.config.old
+            openwrt/vars.cache
+            openwrt/feeds.conf.default
+            openwrt/bin/**
+            openwrt/build_dir/**
+            openwrt/dl/**
+            openwrt/feeds/**
+            openwrt/package/**
+            openwrt/staging_dir/**
+            openwrt/tmp/**
