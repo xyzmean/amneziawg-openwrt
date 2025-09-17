@@ -49,7 +49,6 @@ jobs:
           fetch-depth: 0
 
       - name: Checkout OpenWrt repository
-        if: ${{ inputs.update_go }}
         uses: actions/checkout@v5
         with:
           path: openwrt
@@ -79,6 +78,10 @@ jobs:
           echo "CONFIG_PACKAGE_kmod-crypto-lib-chacha20=y" >> .config
           echo "CONFIG_PACKAGE_kmod-crypto-lib-chacha20poly1305=y" >> .config
           echo "CONFIG_PACKAGE_kmod-crypto-chacha20poly1305=y" >> .config
+          echo "CONFIG_PACKAGE_kmod-amneziawg=y" >> .config
+          echo "CONFIG_PACKAGE_amneziawg-go=y" >> .config
+          echo "CONFIG_PACKAGE_amneziawg-tools=y" >> .config
+          echo "CONFIG_PACKAGE_luci-proto-amneziawg=y" >> .config
           ./scripts/feeds update -a
 
       - name: Update Go version
@@ -89,8 +92,6 @@ jobs:
           cp -r packages/lang/golang openwrt/feeds/packages/lang
 
       - name: Build toolchain and kernel
-        env: 
-          update_go: ${{ inputs.update_go }}
         run: |
           set -e -x
           cd openwrt
@@ -104,8 +105,7 @@ jobs:
             echo "Deleting dead link: ${deadlink}"
             rm -f "${deadlink}"
           done
-          echo "update_go=${{ env.update_go }}" >> vars.cache
-      
+
       - name: Save toolchain and kernel cache
         id: cache-tools-kernel-save
         uses: actions/cache/save@v4
@@ -114,7 +114,6 @@ jobs:
           path: |
             openwrt/.config
             openwrt/.config.old
-            openwrt/vars.cache
             openwrt/feeds.conf.default
             openwrt/bin/**
             openwrt/build_dir/**
