@@ -74,8 +74,7 @@ jobs:
       run: |
         set -e -x
         cd openwrt
-        cat .config | grep amnezia
-        make defconfig
+        mv .config.old .config
         if [ "${{ env.compile_kmod }}" = "true" ]; then
           make package/kmod-amneziawg/{clean,download,prepare,compile} -j $(nproc)
         fi
