@@ -91,7 +91,7 @@ jobs:
         mkdir awgrelease
         echo "vermagic=$(cat openwrt/build_dir/target-${{ inputs.openwrt_arch }}*/linux-${{ inputs.openwrt_target }}_${{ inputs.openwrt_subtarget }}/linux-*/.vermagic)" > awgrelease/vermagic
         if [ "${{ env.compile_kmod }}" = "true" ]; then
-          find "openwrt/bin/targets/${{ inputs.openwrt_arch }}/${{ inputs.openwrt_target }}/packages" -maxdepth 1 -type f -name 'kmod-amneziawg*' -exec cp {} awgrelease \;
+          find "openwrt/bin/targets/${{ inputs.openwrt_target }}/${{ inputs.openwrt_subtarget }}/packages" -maxdepth 1 -type f -name 'kmod-amneziawg*' -exec cp {} awgrelease \;
         fi
         find "openwrt/bin/packages/${{ inputs.openwrt_arch }}/awgopenwrt" -maxdepth 1 -type f \( -name '*.ipk' -o -name '*.apk' \) -exec cp {} awgrelease \;
 
