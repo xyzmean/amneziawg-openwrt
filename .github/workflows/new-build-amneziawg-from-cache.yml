@@ -74,7 +74,6 @@ jobs:
       run: |
         set -e -x
         cd openwrt
-        mv .config.old .config
         if [ "${{ env.compile_kmod }}" = "true" ]; then
           make package/kmod-amneziawg/{clean,download,prepare,compile} -j $(nproc)
         fi
@@ -85,16 +84,19 @@ jobs:
         make package/amneziawg-tools/{clean,download,prepare,compile} -j $(nproc)
 
     - name: Prepare artifacts
+      env:
+        compile_kmod: ${{ inputs.compile_kmod }}
       run: |
         set -e -x
         mkdir awgrelease
         echo "vermagic=$(cat openwrt/build_dir/target-${{ inputs.openwrt_arch }}*/linux-${{ inputs.openwrt_target }}_${{ inputs.openwrt_subtarget }}/linux-*/.vermagic)" > awgrelease/vermagic
         cp openwrt/bin/packages/${{ inputs.openwrt_arch }}/awgopenwrt/*.{ipk,apk} awgrelease
-        cp openwrt/bin/targets/${{ inputs.openwrt_arch }}/${{ inputs.openwrt_target }}/packages/kmod-amneziawg* awgrelease
+        if [ "${{ env.compile_kmod }}" = "true" ]; then
+          cp openwrt/bin/targets/${{ inputs.openwrt_arch }}/${{ inputs.openwrt_target }}/packages/kmod-amneziawg* awgrelease
+        fi
 
     - name: Upload artifacts
       uses: actions/upload-artifact@v4
       with:
         name: amneziawg-${{ inputs.openwrt_version }}_${{ inputs.openwrt_arch }}_${{ inputs.openwrt_target }}_${{ inputs.openwrt_subtarget }}
         path: awgrelease/*
-  
