@@ -68,12 +68,13 @@ jobs:
         run: |
           set -e -x
           cd openwrt
+          echo "src-cpy awgopenwrt ../amneziawg" >> feeds.conf.default
+          ./scripts/feeds update -a
           if [ "${{ inputs.openwrt_version }}" = "SNAPSHOT" ]; then
             base_url="https://downloads.openwrt.org/snapshots/targets/${{ inputs.openwrt_target }}/${{ inputs.openwrt_subtarget }}"
           else
             base_url="https://downloads.openwrt.org/releases/${{ inputs.openwrt_version }}/targets/${{ inputs.openwrt_target }}/${{ inputs.openwrt_subtarget }}"
           fi
-          echo "src-cpy awgopenwrt ../amneziawg" >> feeds.conf.default
           curl -fsL "$base_url/config.buildinfo" > .config
           echo "CONFIG_PACKAGE_kmod-crypto-lib-chacha20=y" >> .config
           echo "CONFIG_PACKAGE_kmod-crypto-lib-chacha20poly1305=y" >> .config
@@ -82,7 +83,6 @@ jobs:
           echo "CONFIG_PACKAGE_amneziawg-go=y" >> .config
           echo "CONFIG_PACKAGE_amneziawg-tools=y" >> .config
           echo "CONFIG_PACKAGE_luci-proto-amneziawg=y" >> .config
-          ./scripts/feeds update -a
 
       - name: Update Go version
         if: ${{ inputs.update_go }}
