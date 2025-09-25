@@ -69,6 +69,8 @@ jobs:
         sudo apt-get install -y python3-pyelftools python3-dev python3-setuptools swig
 
     - name: Download and prepare SDK
+      env:
+        compile_go: ${{ inputs.compile_go }}
       run: |
         set -e -x
         if [ "${{ inputs.openwrt_version }}" = "SNAPSHOT" ]; then
@@ -97,8 +99,10 @@ jobs:
         echo "CONFIG_PACKAGE_amneziawg-go=y" >> openwrt/.config
         echo "CONFIG_PACKAGE_amneziawg-tools=y" >> openwrt/.config
         echo "CONFIG_PACKAGE_luci-proto-amneziawg=y" >> openwrt/.config
-        rm -r openwrt/feeds/packages/lang/golang
-        cp -r packages/lang/golang openwrt/feeds/packages/lang
+        if [ "${{ env.compile_go }}" = "true" ]; then
+          rm -r openwrt/feeds/packages/lang/golang
+          cp -r packages/lang/golang openwrt/feeds/packages/lang
+        fi
         ./openwrt/scripts/feeds install -a
         make -C openwrt defconfig
   
