@@ -1,4 +1,5 @@
-name: Build OpenWrt toolchain cache
+name: Legacy - step 2. Build AmneziaWG from cache
+
 on:
   workflow_dispatch:
     inputs:
