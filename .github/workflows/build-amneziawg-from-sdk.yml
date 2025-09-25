@@ -81,7 +81,8 @@ jobs:
         tar -xf "$file_name"
         rm -f *.tar.zst
         mv openwrt-sdk* openwrt
-        
+
+        echo "src-cpy awgopenwrt ../amneziawg" >> openwrt/feeds.conf.default
         ./openwrt/scripts/feeds update -a
         curl -fsL "$base_url/config.buildinfo" > openwrt/.config
         echo "CONFIG_PACKAGE_kmod-crypto-lib-chacha20=y" >> openwrt/.config
