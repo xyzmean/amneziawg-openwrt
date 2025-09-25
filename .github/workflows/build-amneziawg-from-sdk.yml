@@ -94,7 +94,7 @@ jobs:
         echo "CONFIG_PACKAGE_luci-proto-amneziawg=y" >> openwrt/.config
         rm -r openwrt/feeds/packages/lang/golang
         cp -r packages/lang/golang openwrt/feeds/packages/lang
-        ./scripts/feeds install -a
+        ./openwrt/scripts/feeds install -a
         make -C openwrt defconfig
   
     - name: Compile AmneziaWG packages
