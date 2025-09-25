@@ -77,7 +77,7 @@ jobs:
           exit 1
         fi
         curl -fsLO "$base_url$sdk_url"
-        file_name=$(basename "$SDK_URL")
+        file_name=$(basename "$sdk_url")
         tar -xf "$file_name"
         rm -f *.tar.zst
         mv openwrt-sdk* openwrt
