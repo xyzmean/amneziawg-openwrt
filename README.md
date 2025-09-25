@@ -68,49 +68,91 @@ This repository is intended primarily for compiling packages during the firmware
 
 9. After building, firmware will be located at: `{path to openwrt dir}/bin/targets/{your target}/{your subtarget}` and compiled packages at: `{path to openwrt dir}/bin/targets/{your target}/{your subtarget}/packages` (kernel module) and `{path to openwrt dir}/bin/packages/{your architecture}/awgopenwrt` (other packages).
 
-## Compile AmneziaWG packages without building the firmware
+## Compile AmneziaWG Packages Without Building the Firmware
 
-You can also compile packages independently without building firmware. The process consists of two workflows: building the OpenWRT toolchain (takes about 2.5 hours) and compiling AmneziaWG packages (takes under 20 minutes). The second requires the first to be completed once and can be restarted as needed.
+You can compile packages independently without building the full firmware. There are two workflows available: the **new workflow** and the **legacy workflow**. It is recommended to use the new workflow. The legacy workflow will continue to be supported to maintain backward compatibility.
 
-Steps:
-1. Get your router parameters:
-   - OpenWRT version: `SNAPSHOT` or release (e.g., `24.10.2`), found on the `Status -> Overview` page under `Firmware Version`.
-   - CPU/package architecture: run `apk info kernel` or `opkg info kernel` to check `Architecture` value (e.g., `aarch64_cortex-a53`) or consult [OpenWRT router database](https://openwrt.org/toh/start).
-   - Target and subtarget: found on the `Status -> Overview` page under `Target Platform` (before and after the slash).
+### New Workflow vs. Legacy Workflow
+
+Key differences between the workflows:
+
+1. The new workflow runs much faster (~20 minutes vs. 2.5 hours).
+2. The new workflow uses the SDK instead of building the toolchain from scratch.
+3. The new workflow consists of a single step instead of two.
+4. The new workflow also compiles the localization package.
+5. The new workflow does not calculate `vermagic` value (see below).
+
+### How to Use the New Workflow
+
+The new workflow is a single step process: run it, and when complete, all compiled packages will be available in the run's artifacts section (at the bottom of the GitHub Actions page).
+
+Steps to follow:
+
+1. Obtain your router parameters:
+   - **OpenWRT version:** `SNAPSHOT` or a stable release (e.g., `24.10.2`), found under `Status -> Overview` on the `Firmware Version` line.
+   - **CPU/package architecture:** run `apk info kernel` or `opkg info kernel` to check the `Architecture` value (e.g., `aarch64_cortex-a53`), or consult the [OpenWRT router database](https://openwrt.org/toh/start).
+   - **Target and Subtarget:** found under `Status -> Overview` on the `Target Platform` line (before and after the slash).
 
 2. Fork this repository.
 
-3. Enable GitHub Actions if not already.
+3. Enable GitHub Actions, if not already enabled.
 
-4. Choose `Build OpenWrt toolchain cache`, enter router parameters in `Run workflow`, and start.
-   - Optionally set a different YAWWG version using the release tag/commit hash field.
-   - Do not disable `Update Go` unless you know what you are doing; `amneziawg-go` requires Go > 1.24.4.
+4. Select the workflow `New - Build AmneziaWG from SDK`, enter your router parameters in the `Run workflow` form, and start the run.
+   - Optionally, specify a different YAWWG version using the release tag or commit hash field.
+   - Choose whether to compile the kernel module, Go implementation, or both.
 
-5. Wait ~2-2.5 hours for cache to build.
+5. Wait approximately 20 minutes until the build completes.
 
-6. Choose `Build AmneziaWG from cache`, enter parameters, and run.
-   - Select whether to compile kernel module, Go implementation, or both.
+6. Download the artifacts, extract them, and install the packages.
 
-7. Wait ~10-20 minutes for the binaries.
+### How to Use the Legacy Workflow
 
-8. Download the artifacts, unpack, and install:
-   - Via Web Interface (LuCi):
-      - Go to `System -> Software`.
-      - Click `Upload Package...`.
-      - Upload `kmod-amneziawg` or `amneziawg-go` `.ipk`/`.apk`.
-      - Confirm installation.
-      - Repeat for `amneziawg-tools` and `luci-proto-amneziawg`.
-   - Via console:
-      - Transfer files to router.
-      - Run `apk install {path to kmod-amneziawg or amneziawg-go .apk}` or `opkg install {path to kmod-amneziawg or amneziawg-go .ipk}`.
-      - Run similar commands for `amneziawg-tools` and `luci-proto-amneziawg`.
+The legacy process involves two workflows (steps): building the OpenWRT toolchain cache (about 2.5 hours) and compiling AmneziaWG packages (under 20 minutes). The toolchain build needs to be completed once, after which the package compilation step can be repeated as needed.
 
-9. Reboot router or run: `/etc/init.d/network restart`
+Steps:
 
-10. Congratulations! AmneziaWG is now installed. Go to `Network -> Interfaces`, click `Add new interface...`, select `AmneziaWG` protocol.
+1. Obtain your router parameters following the same instructions as in the new workflow.
 
-*Note: Browser cache cleaning may be required to see the new protocol in OpenWRT.*
+2. Fork this repository.
+
+3. Enable GitHub Actions, if not already enabled.
+
+4. Select the workflow `Legacy - step 1. Build OpenWrt toolchain cache`, enter your router parameters, and start the run.
+   - Optionally set a different YAWWG version using the release tag or commit hash field.
+   - Do **not** disable `Update Go` unless you understand the consequences; `amneziawg-go` requires Go version greater than 1.24.4.
+
+5. Wait approximately 2 to 2.5 hours for the cache build to complete.
+
+6. Select the workflow `Legacy - step 2. Build AmneziaWG from cache`, input the parameters, and run it.
+   - Choose whether to compile the kernel module, Go implementation, or both.
+
+7. Wait around 10–20 minutes for the packages to compile.
+
+8. Download the artifacts, extract, and install.
+
+## How to Install AmneziaWG
+
+1. Choose your installation method:
+
+   - **Via Web Interface (LuCI):**
+     - Navigate to `System -> Software`.
+     - Click `Upload Package...`.
+     - Upload `kmod-amneziawg` or `amneziawg-go` `.ipk` or `.apk` files.
+     - Confirm the installation.
+     - Repeat for `amneziawg-tools` and `luci-proto-amneziawg`.
+
+   - **Via Console:**
+     - Transfer the package files to your router.
+     - Run `apk install {path to kmod-amneziawg or amneziawg-go .apk}` or `opkg install {path to kmod-amneziawg or amneziawg-go .ipk}`.
+     - Install `amneziawg-tools` and `luci-proto-amneziawg` similarly.
+
+2. Reboot the router or restart the network service with: `/etc/init.d/network restart`
+
+3. Congratulations! AmneziaWG is installed. Go to `Network -> Interfaces`, click `Add new interface...`, then select `AmneziaWG` as the protocol.
+
+> **Note:** You may need to clear your browser cache to see the new protocol available in OpenWRT.
 
 ### Vermagic control for `SNAPSHOT` versions
+> **Note:** Vermagic is calculated only for the **old workflow**
 
 Vermagic is a hash calculated for the OpenWRT kernel. When installing kernel-related packages, OpenWRT checks if the package's `vermagic` matches the kernel's. If not, installation won't succeed. Since `SNAPSHOT` versions update daily, `vermagic` values may differ. Check your firmware's `vermagic` by running `apk info kernel` or `opkg info kernel` and noting the hash after the kernel version in `Version`. For example, `6.6.52~f58afd3748410d3b1baa06a466d6682-r1` means `vermagic` is `f58afd3748410d3b1baa06a466d6682`. The compiled package's `vermagic` value is located in the `vermagic` file within the workflow artifacts. If these do not match, the kernel module cannot be installed.
