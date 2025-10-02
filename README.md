@@ -6,7 +6,7 @@
 A: [Check here](#how-to-use-the-new-workflow).
 
 **Q: What is the latest supported version of the protocol?**  
-A: YAWWG fully supports AmneziaWG v2.0, including S3-S4, I1-I5 and ranged H1-H4 parameters.
+A: YAAWG fully supports AmneziaWG v2.0, including S3-S4, I1-I5 and ranged H1-H4 parameters.
 
 **Q: Should I use the kernel module or the Go implementation?**  
 A: Use the kernel module by default. If it doesn't work for you, switch to the Go implementation. More info [here](#kmod-amneziawg-vs-amneziawg-go).
