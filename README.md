@@ -19,7 +19,7 @@ A: There are several reasons:
 4. You can review all the sources and make sure there are no unexpected issues or vulnerabilities before building or deploying.
 
 **Q: How are versions named?**  
-A: Versioning follows the pattern `x.y.z` where `x` and `y` represent the current AmneziaWG version, and `z` corresponds to the YAWWG version.
+A: Versioning follows the pattern `x.y.z` where `x` and `y` represent the current AmneziaWG version, and `z` corresponds to the YAAWG version.
 
 ## Project description
 
@@ -121,7 +121,7 @@ Steps to follow:
 3. Enable GitHub Actions, if not already enabled.
 
 4. Select the workflow `New - Build AmneziaWG from SDK`, enter your router parameters in the `Run workflow` form, and start the run.
-   - Optionally, specify a different YAWWG version using the release tag or commit hash field.
+   - Optionally, specify a different YAAWG version using the release tag or commit hash field.
    - Choose whether to compile the kernel module, Go implementation, or both.
 
 5. Wait approximately 20 minutes until the build completes.
@@ -141,7 +141,7 @@ Steps:
 3. Enable GitHub Actions, if not already enabled.
 
 4. Select the workflow `Legacy - step 1. Build OpenWrt toolchain cache`, enter your router parameters, and start the run.
-   - Optionally set a different YAWWG version using the release tag or commit hash field.
+   - Optionally set a different YAAWG version using the release tag or commit hash field.
    - Do **not** disable `Update Go` unless you understand the consequences; `amneziawg-go` requires Go version greater than 1.24.4.
 
 5. Wait approximately 2 to 2.5 hours for the cache build to complete.
