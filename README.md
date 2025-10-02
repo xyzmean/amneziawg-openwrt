@@ -1,5 +1,28 @@
 # YAAWG: Yet another AmneziaWG variation for OpenWrt
 
+## FAQ & TL;DR
+
+**Q: Where can I get the binaries?**  
+A: [Check here](#how-to-use-the-new-workflow).
+
+**Q: What is the latest supported version of the protocol?**  
+A: YAWWG fully supports AmneziaWG v2.0, including S3-S4, I1-I5 and ranged H1-H4 parameters.
+
+**Q: Should I use the kernel module or the Go implementation?**  
+A: Use the kernel module by default. If it doesn't work for you, switch to the Go implementation. More info [here](#kmod-amneziawg-vs-amneziawg-go).
+
+**Q: Why are no compiled binaries available?**  
+A: There are several reasons:  
+1. OpenWRT supports many architectures and targets (5-7 of which cover 80% of devices). Compiling binaries for all of them is impractical.  
+2. It takes just a few clicks and about 20 minutes to compile binaries with your parameters.  
+3. If you find compiling difficult, correctly setting up the protocol will be even harder.
+4. You can review all the sources and make sure there are no unexpected issues or vulnerabilities before building or deploying.
+
+**Q: How are versions named?**  
+A: Versioning follows the pattern `x.y.z` where `x` and `y` represent the current AmneziaWG version, and `z` corresponds to the YAWWG version.
+
+## Project description
+
 This project aims to update the sources of the initial AmneziaWG repository and align them as closely as possible with four upstream projects ([luci-proto-wireguard](https://github.com/openwrt/luci/tree/master/protocols/luci-proto-wireguard), [amneziawg-tools](https://github.com/amnezia-vpn/amneziawg-tools/), [amneziawg-linux-kernel-module](https://github.com/amnezia-vpn/amneziawg-linux-kernel-module), [amneziawg-go](https://github.com/amnezia-vpn/amneziawg-go)).
 
 Why? Because it seems the original repository has been abandoned: over half a year has passed since the last commit, no bugs were fixed, and no new protocol versions were added, while the four upstream projects continue receiving regular updates (at least from the community).
@@ -28,23 +51,23 @@ The main differences and objectives are:
 
 4. `amneziawg-go` acts as an alternative to `kmod-amneziawg`. Please refer to [this section](#kmod-amneziawg-vs-amneziawg-go) for more information. The Go implementation is fully based on the upstream project [amneziawg-go](https://github.com/amnezia-vpn/amneziawg-go).
 
-# `kmod-amneziawg` vs `amneziawg-go`
+## `kmod-amneziawg` vs `amneziawg-go`
 
 When the AmneziaWG authors introduced the v1.5 protocol, it was supported only in the Go implementation. Thus the user namespace (Go) implementation was added to the repo in order to support the newer protocol version. Later, v2.0 protocol support was added to both the user namespace (Go) and kernel module implementations. To maintain backward compatibility, this repository will continue to support both packages.
 
 Differences:
-1. `kmod-amneziawg`: requires a less powerful device to run and consumes less space but is still in beta. Use at your own risk.
-2. `amneziawg-go`: requires a more powerful device and uses more space but provides a user namespace implementation of the protocol.
+1. `kmod-amneziawg`: requires a less powerful device to run, consumes less space and provides a faster throughput. Recommended option.
+2. `amneziawg-go`: requires a more powerful device and uses more space but provides a user namespace implementation of the protocol. Use it if kernel module doesn't work for you.
 
 If both implementations are installed, `kmod-amneziawg` will be used by default.
 
-# Results
+## Results
 
 Everything seems to work fine. No major problems have been detected or reported so far.
 
-# How to build and use
+## How to build and use
 
-## Build OpenWRT firmware with AmneziaWG packages included
+### Build OpenWRT firmware with AmneziaWG packages included
 
 This repository is intended primarily for compiling packages during the firmware build process. Follow these steps:
 
@@ -68,11 +91,11 @@ This repository is intended primarily for compiling packages during the firmware
 
 9. After building, firmware will be located at: `{path to openwrt dir}/bin/targets/{your target}/{your subtarget}` and compiled packages at: `{path to openwrt dir}/bin/targets/{your target}/{your subtarget}/packages` (kernel module) and `{path to openwrt dir}/bin/packages/{your architecture}/awgopenwrt` (other packages).
 
-## Compile AmneziaWG Packages Without Building the Firmware
+### Compile AmneziaWG Packages Without Building the Firmware
 
 You can compile packages independently without building the full firmware. There are two workflows available: the **new workflow** and the **legacy workflow**. It is recommended to use the new workflow. The legacy workflow will continue to be supported to maintain backward compatibility.
 
-### New Workflow vs. Legacy Workflow
+#### New Workflow vs. Legacy Workflow
 
 Key differences between the workflows:
 
@@ -82,7 +105,7 @@ Key differences between the workflows:
 4. The new workflow also compiles the localization package.
 5. The new workflow does not calculate `vermagic` value (see below).
 
-### How to Use the New Workflow
+#### How to Use the New Workflow
 
 The new workflow is a single step process: run it, and when complete, all compiled packages will be available in the run's artifacts section (at the bottom of the GitHub Actions page).
 
@@ -105,7 +128,7 @@ Steps to follow:
 
 6. Download the artifacts, extract them, and install the packages.
 
-### How to Use the Legacy Workflow
+#### How to Use the Legacy Workflow
 
 The legacy process involves two workflows (steps): building the OpenWRT toolchain cache (about 2.5 hours) and compiling AmneziaWG packages (under 20 minutes). The toolchain build needs to be completed once, after which the package compilation step can be repeated as needed.
 
@@ -130,7 +153,7 @@ Steps:
 
 8. Download the artifacts, extract, and install.
 
-## How to Install AmneziaWG
+### How to Install AmneziaWG
 
 1. Choose your installation method:
 
@@ -152,7 +175,7 @@ Steps:
 
 > **Note:** You may need to clear your browser cache to see the new protocol available in OpenWRT.
 
-### Vermagic control for `SNAPSHOT` versions
+#### Vermagic control for `SNAPSHOT` versions
 > **Note:** Vermagic is calculated only for the **old workflow**
 
 Vermagic is a hash calculated for the OpenWRT kernel. When installing kernel-related packages, OpenWRT checks if the package's `vermagic` matches the kernel's. If not, installation won't succeed. Since `SNAPSHOT` versions update daily, `vermagic` values may differ. Check your firmware's `vermagic` by running `apk info kernel` or `opkg info kernel` and noting the hash after the kernel version in `Version`. For example, `6.6.52~f58afd3748410d3b1baa06a466d6682-r1` means `vermagic` is `f58afd3748410d3b1baa06a466d6682`. The compiled package's `vermagic` value is located in the `vermagic` file within the workflow artifacts. If these do not match, the kernel module cannot be installed.
