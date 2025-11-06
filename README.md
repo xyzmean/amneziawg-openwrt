@@ -22,7 +22,7 @@ A: There are several reasons:
 A: Versioning follows the pattern `x.y.z` where `x` and `y` represent the current AmneziaWG version, and `z` corresponds to the YAAWG version.
 
 **Q: I get errors on steps `Download and prepare SDK`, `Checkout OpenWRT repository`, `Update feeds`. Any advice?**  
-A: It looks like the OpenWRT repository went for a coffee break and ins unavailable at the moment. Try restarting the workflow in 15-40 minutes.
+A: It looks like the OpenWRT repository went for a coffee break and is unavailable at the moment. Try restarting the workflow in 15-40 minutes.
 
 ## Project description
 
