@@ -21,6 +21,9 @@ A: There are several reasons:
 **Q: How are versions named?**  
 A: Versioning follows the pattern `x.y.z` where `x` and `y` represent the current AmneziaWG version, and `z` corresponds to the YAAWG version.
 
+**Q: I get errors on steps `Download and prepare SDK`, `Checkout OpenWRT repository`, `Update feeds`. Any advice?**  
+A: It looks like the OpenWRT repository went for a coffee break and ins unavailable at the moment. Try restarting the workflow in 15-40 minutes.
+
 ## Project description
 
 This project aims to update the sources of the initial AmneziaWG repository and align them as closely as possible with four upstream projects ([luci-proto-wireguard](https://github.com/openwrt/luci/tree/master/protocols/luci-proto-wireguard), [amneziawg-tools](https://github.com/amnezia-vpn/amneziawg-tools/), [amneziawg-linux-kernel-module](https://github.com/amnezia-vpn/amneziawg-linux-kernel-module), [amneziawg-go](https://github.com/amnezia-vpn/amneziawg-go)).
@@ -126,7 +129,9 @@ Steps to follow:
 
 5. Wait approximately 20 minutes until the build completes.
 
-6. Download the artifacts, extract them, and install the packages.
+6. If you get an error in step `Download and prepare SDK`, it is more likely that the OpenWRT repository is unavailable. Please restart the process in 15-40 minutes.
+
+7. Download the artifacts, extract them, and install the packages.
 
 #### How to Use the Legacy Workflow
 
@@ -146,12 +151,16 @@ Steps:
 
 5. Wait approximately 2 to 2.5 hours for the cache build to complete.
 
-6. Select the workflow `Legacy - step 2. Build AmneziaWG from cache`, input the parameters, and run it.
+6. If you get an error in steps `Checkout OpenWRT repository`, `Update feeds`, it is more likely that the OpenWRT repository is unavailable. Please restart step 1 in 15-40 minutes.
+
+7. Select the workflow `Legacy - step 2. Build AmneziaWG from cache`, input the parameters, and run it.
    - Choose whether to compile the kernel module, Go implementation, or both.
+   
+8. Again, errors in step `Checkout OpenWRT repository` show that the OpenWRT repository is unavailable. Please restart step 2 in 15-40 minutes.
 
-7. Wait around 10–20 minutes for the packages to compile.
+9. Wait around 10–20 minutes for the packages to compile.
 
-8. Download the artifacts, extract, and install.
+10. Download the artifacts, extract, and install.
 
 ### How to Install AmneziaWG
 
