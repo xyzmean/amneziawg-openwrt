@@ -2,15 +2,15 @@ include $(TOPDIR)/rules.mk
 include $(INCLUDE_DIR)/kernel.mk
 
 PKG_NAME:=kmod-amneziawg
-PKG_VERSION:=2.0.8
+PKG_VERSION:=2.0.9
 PKG_RELEASE:=1
 WIREGUARD_VERSION:=1.0.0
 
 PKG_SOURCE_PROTO:=git
-PKG_SOURCE_URL:=https://github.com/this-username-has-been-taken/amneziawg-linux-kernel-module.git
+PKG_SOURCE_URL:=https://github.com/amnezia-vpn/amneziawg-linux-kernel-module.git
 # Reference: master branch
-PKG_SOURCE_VERSION:=44276df04a3b84e74c470afab84fdb42bd078e8c
-PKG_MIRROR_HASH:=41a3710965215764cc7aeadfbccc245ef423e0badad31dcf1dee7b3c42b7a78b
+PKG_SOURCE_VERSION:=b2e234ba31b7aae65e21dfd2ab2d5250dd8b65b0
+PKG_MIRROR_HASH:=21bb03e5c50a61a68730ff905f4b837d6a46a4e564da61aa9797498a90325a37
 
 PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_NAME)-$(PKG_VERSION)
 MAKE_PATH:=src

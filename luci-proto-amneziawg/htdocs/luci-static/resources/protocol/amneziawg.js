@@ -193,6 +193,9 @@ return network.registerProtocol('amneziawg', {
 			return true;
 		};
 
+		o = s.taboption('advanced', form.DynamicList, 'ip6prefix', _('IPv6 routed prefix'), _('This is the prefix routed to you by your provider for use by clients'));
+		o.datatype = 'cidr6';
+
         // AmneziaWG
 
         try {
@@ -959,8 +962,14 @@ return network.registerProtocol('amneziawg', {
 				};
 
 				return qrm.render().then(function(nodes) {
-					mapNode.classList.add('hidden');
-					mapNode.nextElementSibling.classList.add('hidden');
+					// stash the current dialogue style (visible)
+					const dStyle = mapNode.style;
+					// hide the current modal window
+					mapNode.style.display = 'none';
+					// stash the current button row style (visible)
+					const bRowStyle = mapNode.nextElementSibling.style;
+					// hide the [ Dismiss | Save ] button row
+					mapNode.nextElementSibling.style.display = 'none';
 
 					headNode.appendChild(E('span', [ ' » ', _('Generate configuration') ]));
 					mapNode.parentNode.appendChild(E([], [
@@ -971,10 +980,15 @@ return network.registerProtocol('amneziawg', {
 							E('button', {
 								'class': 'btn',
 								'click': function() {
+									// Remove QR code button (row)
 									nodes.parentNode.removeChild(nodes.nextSibling);
+									// Remove QR code form
 									nodes.parentNode.removeChild(nodes);
-									mapNode.classList.remove('hidden');
-									mapNode.nextSibling.classList.remove('hidden');
+									// unhide the WiFi modal dialogue
+									mapNode.style = dStyle;
+									// Revert button row style to visible again
+									mapNode.nextSibling.style = bRowStyle;
+									// Remove the H4 span (») title
 									headNode.removeChild(headNode.lastChild);
 								}
 							}, [ _('Back to peer configuration') ])
