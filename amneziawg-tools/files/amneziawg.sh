@@ -4,9 +4,31 @@
 
 # shellcheck disable=SC1091,SC3003,SC3043
 
+# Strict mode for better error handling
+set -euo pipefail 2>/dev/null || set -eu
+
 AWG=/usr/bin/awg
-if [ ! -x $AWG ]; then
-	logger -t "amneziawg" "error: missing amneziawg-tools (${AWG})"
+AWG_CFG_DIR=/tmp/amneziawg
+AWG_LOG_TAG="amneziawg"
+
+# Logging function
+log_msg() {
+	local level="$1"
+	shift
+	logger -t "$AWG_LOG_TAG" "$level: $*"
+}
+
+log_error() {
+	log_msg "error" "$*"
+}
+
+log_info() {
+	log_msg "info" "$*"
+}
+
+# Check for awg binary
+if [ ! -x "$AWG" ]; then
+	log_error "missing amneziawg-tools (${AWG})"
 	exit 0
 fi
 
@@ -44,23 +66,23 @@ proto_amneziawg_init_config() {
 }
 
 proto_amneziawg_is_kernel_mode() {
-	if [ ! -e /sys/module/amneziawg ]; then
-		modprobe amneziawg > /dev/null 2>&1 || true
-
-		if [ -e /sys/module/amneziawg ]; then
-			return 0
-		else
-			if ! command -v "${WG_QUICK_USERSPACE_IMPLEMENTATION:-amneziawg-go}" >/dev/null; then
-				ret=$?
-				echo "Please install either kernel module (kmod-amneziawg package) or user-space implementation in /usr/bin/amneziawg-go."
-				exit $ret
-			else
-				return 1
-			fi
-		fi
-	else
+	# Check if kernel module is already loaded
+	if [ -e /sys/module/amneziawg ]; then
 		return 0
 	fi
+
+	# Try to load kernel module
+	if modprobe amneziawg >/dev/null 2>&1; then
+		[ -e /sys/module/amneziawg ] && return 0
+	fi
+
+	# Fallback to userspace implementation
+	if ! command -v "${WG_QUICK_USERSPACE_IMPLEMENTATION:-amneziawg-go}" >/dev/null 2>&1; then
+		log_error "Neither kernel module (kmod-amneziawg) nor userspace implementation (amneziawg-go) found"
+		return 1
+	fi
+
+	return 1
 }
 
 proto_amneziawg_setup_peer() {
@@ -161,35 +183,16 @@ ensure_key_is_generated() {
 
 proto_amneziawg_setup() {
 	local config="$1"
-	local awg_dir="/tmp/amneziawg"
-	local awg_cfg="${awg_dir}/${config}"
+	local awg_cfg="${AWG_CFG_DIR}/${config}"
 
-	local private_key
-	local listen_port
-	local addresses
-	local mtu
-	local fwmark
-	local ip6prefix
-	local nohostroute
-	local tunlink
+	# Standard WireGuard parameters
+	local private_key listen_port addresses mtu fwmark ip6prefix nohostroute tunlink
 
-	# AmneziaWG specific parameters
-	local awg_jc
-	local awg_jmin
-	local awg_jmax
-	local awg_s1
-	local awg_s2
-	local awg_s3
-	local awg_s4
-	local awg_h1
-	local awg_h2
-	local awg_h3
-	local awg_h4
-	local awg_i1
-	local awg_i2
-	local awg_i3
-	local awg_i4
-	local awg_i5
+	# AmneziaWG v2.0 parameters
+	local awg_jc awg_jmin awg_jmax
+	local awg_s1 awg_s2 awg_s3 awg_s4
+	local awg_h1 awg_h2 awg_h3 awg_h4
+	local awg_i1 awg_i2 awg_i3 awg_i4 awg_i5
 
 	ensure_key_is_generated "${config}"
 
@@ -203,6 +206,7 @@ proto_amneziawg_setup() {
 	config_get nohostroute "${config}" "nohostroute"
 	config_get tunlink "${config}" "tunlink"
 
+	# Load AmneziaWG parameters
 	config_get awg_jc "${config}" "awg_jc"
 	config_get awg_jmin "${config}" "awg_jmin"
 	config_get awg_jmax "${config}" "awg_jmax"
@@ -220,117 +224,91 @@ proto_amneziawg_setup() {
 	config_get awg_i4 "${config}" "awg_i4"
 	config_get awg_i5 "${config}" "awg_i5"
 
+	# Setup interface
 	if proto_amneziawg_is_kernel_mode; then
-		logger -t "amneziawg" "info: using kernel-space kmod-amneziawg for ${AWG}"
-		ip link del dev "${config}" 2>/dev/null
+		log_info "using kernel-space kmod-amneziawg for ${config}"
+		ip link del dev "${config}" 2>/dev/null || true
 		ip link add dev "${config}" type amneziawg
 	else
-		logger -t "amneziawg" "info: using user-space amneziawg-go for ${AWG}"
+		log_info "using user-space amneziawg-go for ${config}"
 		rm -f "/var/run/amneziawg/${config}.sock"
 		amneziawg-go "${config}"
 	fi
 
+	# Set MTU if specified
 	if [ "${mtu}" ]; then
 		ip link set mtu "${mtu}" dev "${config}"
 	fi
 
 	proto_init_update "${config}" 1
 
+	# Create config file
 	umask 077
-	mkdir -p "${awg_dir}"
+	mkdir -p "${AWG_CFG_DIR}"
 	echo "[Interface]" > "${awg_cfg}"
 	echo "PrivateKey=${private_key}" >> "${awg_cfg}"
-	if [ "${listen_port}" ]; then
-		echo "ListenPort=${listen_port}" >> "${awg_cfg}"
-	fi
-	if [ "${fwmark}" ]; then
-		echo "FwMark=${fwmark}" >> "${awg_cfg}"
-	fi
-	# AmneziaWG parameters
-	if [ "${awg_jc}" ]; then
-		echo "Jc=${awg_jc}" >> "${awg_cfg}"
-	fi
-	if [ "${awg_jmin}" ]; then
-		echo "Jmin=${awg_jmin}" >> "${awg_cfg}"
-	fi
-	if [ "${awg_jmax}" ]; then
-		echo "Jmax=${awg_jmax}" >> "${awg_cfg}"
-	fi
-	if [ "${awg_s1}" ]; then
-		echo "S1=${awg_s1}" >> "${awg_cfg}"
-	fi
-	if [ "${awg_s2}" ]; then
-		echo "S2=${awg_s2}" >> "${awg_cfg}"
-	fi
-	if [ "${awg_s3}" ]; then
-		echo "S3=${awg_s3}" >> "${awg_cfg}"
-	fi
-	if [ "${awg_s4}" ]; then
-		echo "S4=${awg_s4}" >> "${awg_cfg}"
-	fi
-	if [ "${awg_h1}" ]; then
-		echo "H1=${awg_h1}" >> "${awg_cfg}"
-	fi
-	if [ "${awg_h2}" ]; then
-		echo "H2=${awg_h2}" >> "${awg_cfg}"
-	fi
-	if [ "${awg_h3}" ]; then
-		echo "H3=${awg_h3}" >> "${awg_cfg}"
-	fi
-	if [ "${awg_h4}" ]; then
-		echo "H4=${awg_h4}" >> "${awg_cfg}"
-	fi
-	if [ "${awg_i1}" ]; then
-		echo "I1=${awg_i1}" >> "${awg_cfg}"
-	fi
-	if [ "${awg_i2}" ]; then
-		echo "I2=${awg_i2}" >> "${awg_cfg}"
-	fi
-	if [ "${awg_i3}" ]; then
-		echo "I3=${awg_i3}" >> "${awg_cfg}"
-	fi
-	if [ "${awg_i4}" ]; then
-		echo "I4=${awg_i4}" >> "${awg_cfg}"
-	fi
-	if [ "${awg_i5}" ]; then
-		echo "I5=${awg_i5}" >> "${awg_cfg}"
-	fi
+
+	# Helper function to add optional config lines
+	_add_cfg() {
+		local key="$1"
+		local value="$2"
+		[ -n "${value}" ] && echo "${key}=${value}" >> "${awg_cfg}"
+	}
+
+	_add_cfg "ListenPort" "${listen_port}"
+	_add_cfg "FwMark" "${fwmark}"
+
+	# Add AmneziaWG parameters using helper
+	_add_cfg "Jc" "${awg_jc}"
+	_add_cfg "Jmin" "${awg_jmin}"
+	_add_cfg "Jmax" "${awg_jmax}"
+	_add_cfg "S1" "${awg_s1}"
+	_add_cfg "S2" "${awg_s2}"
+	_add_cfg "S3" "${awg_s3}"
+	_add_cfg "S4" "${awg_s4}"
+	_add_cfg "H1" "${awg_h1}"
+	_add_cfg "H2" "${awg_h2}"
+	_add_cfg "H3" "${awg_h3}"
+	_add_cfg "H4" "${awg_h4}"
+	_add_cfg "I1" "${awg_i1}"
+	_add_cfg "I2" "${awg_i2}"
+	_add_cfg "I3" "${awg_i3}"
+	_add_cfg "I4" "${awg_i4}"
+	_add_cfg "I5" "${awg_i5}"
+
+	# Add peer configurations
 	config_foreach proto_amneziawg_setup_peer "amneziawg_${config}"
 
 	# Apply configuration file
-	${AWG} setconf "${config}" "${awg_cfg}"
-	AWG_RETURN=$?
-
-	rm -f "${awg_cfg}"
-
-	if [ ${AWG_RETURN} -ne 0 ]; then
+	if ! ${AWG} setconf "${config}" "${awg_cfg}"; then
+		rm -f "${awg_cfg}"
 		sleep 5
 		proto_setup_failed "${config}"
 		exit 1
 	fi
 
-	for address in ${addresses}; do
-		case "${address}" in
-			*:*/*)
-				proto_add_ipv6_address "${address%%/*}" "${address##*/}"
-				;;
-			*.*/*)
-				proto_add_ipv4_address "${address%%/*}" "${address##*/}"
-				;;
-			*:*)
-				proto_add_ipv6_address "${address%%/*}" "128"
-				;;
-			*.*)
-				proto_add_ipv4_address "${address%%/*}" "32"
-				;;
+	rm -f "${awg_cfg}"
+
+	# Add addresses
+	_add_address() {
+		local addr="$1"
+		case "${addr}" in
+			*:*) proto_add_ipv6_address "${addr%%/*}" "${addr##*/}" ;;
+			*.*/*) proto_add_ipv4_address "${addr%%/*}" "${addr##*/}" ;;
+			*:*) proto_add_ipv6_address "${addr%%/*}" "128" ;;
+			*.*) proto_add_ipv4_address "${addr%%/*}" "32" ;;
 		esac
+	}
+	for address in ${addresses}; do
+		_add_address "${address}"
 	done
 
+	# Add IPv6 prefixes
 	for prefix in ${ip6prefix}; do
 		proto_add_ipv6_prefix "$prefix"
 	done
 
-	# endpoint dependency
+	# Setup endpoint host dependencies
 	if [ "${nohostroute}" != "1" ]; then
 		# shellcheck disable=SC2034
 		${AWG} show "${config}" endpoints | \

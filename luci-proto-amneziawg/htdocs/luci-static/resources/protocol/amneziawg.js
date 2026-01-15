@@ -56,6 +56,52 @@ var stubValidator = {
 	}
 };
 
+// AmneziaWG v2.0 parameter validation
+function validateRangedValue(section_id, value) {
+	if (!value || value.length === 0)
+		return true;
+
+	// Check for ranged value format: "123456-123500"
+	if (value.match(/^\d+-\d+$/)) {
+		var parts = value.split('-');
+		var start = parseInt(parts[0], 10);
+		var end = parseInt(parts[1], 10);
+
+		if (isNaN(start) || isNaN(end) || start > end) {
+			return _('Invalid range: start must be less than or equal to end');
+		}
+
+		if (start < 0 || end > 65535) {
+			return _('Port range must be between 0 and 65535');
+		}
+
+		return true;
+	}
+
+	// Check for single value
+	if (value.match(/^\d+$/)) {
+		var val = parseInt(value, 10);
+		if (val < 0 || val > 65535) {
+			return _('Value must be between 0 and 65535');
+		}
+		return true;
+	}
+
+	return _('Invalid format. Use a number or range (e.g., 123456-123500)');
+}
+
+function validateHexValue(section_id, value) {
+	if (!value || value.length === 0)
+		return true;
+
+	// Allow both single hex value and ranged hex values
+	if (value.match(/^0x[a-fA-F0-9]+(-0x[a-fA-F0-9]+)?$/)) {
+		return true;
+	}
+
+	return _('Invalid hexadecimal value. Use format: 0x1234 or 0x1234-0x5678');
+}
+
 function generateDescription(name, texts) {
 	return E('li', { 'style': 'color: inherit;' }, [
 		E('span', name),
@@ -203,78 +249,78 @@ return network.registerProtocol('amneziawg', {
         }
         catch(e) {}
 
-        o = s.taboption('amneziawg', form.Value, 'awg_jc', _('Jc'), _('Junk packet count.'));
+        o = s.taboption('amneziawg', form.Value, 'awg_jc', _('Jc'), _('Junk packet count. Number of junk packets to send with each real packet.'));
         o.datatype = 'uinteger';
         o.placeholder = '0';
         o.optional = true;
 
-        o = s.taboption('amneziawg', form.Value, 'awg_jmin', _('Jmin'), _('Junk packet minimum size.'));
+        o = s.taboption('amneziawg', form.Value, 'awg_jmin', _('Jmin'), _('Junk packet minimum size in bytes. Must be less than or equal to Jmax.'));
         o.datatype = 'uinteger';
         o.placeholder = '0';
         o.optional = true;
 
-        o = s.taboption('amneziawg', form.Value, 'awg_jmax', _('Jmax'), _('Junk packet maximum size.'));
+        o = s.taboption('amneziawg', form.Value, 'awg_jmax', _('Jmax'), _('Junk packet maximum size in bytes. Must be greater than or equal to Jmin.'));
         o.datatype = 'uinteger';
         o.placeholder = '0';
         o.optional = true;
 
-        o = s.taboption('amneziawg', form.Value, 'awg_s1', _('S1'), _('Handshake initiation packet junk header size.'));
+        o = s.taboption('amneziawg', form.Value, 'awg_s1', _('S1'), _('Handshake initiation packet junk header size in bytes.'));
         o.datatype = 'uinteger';
         o.placeholder = '0';
         o.optional = true;
 
-        o = s.taboption('amneziawg', form.Value, 'awg_s2', _('S2'), _('Handshake response packet junk header size.'));
-        o.datatype = 'uinteger';
-        o.placeholder = '0';
-        o.optional = true;
-		
-		o = s.taboption('amneziawg', form.Value, 'awg_s3', _('S3'), _('Cookie reply packet junk header size.'));
-        o.datatype = 'uinteger';
-        o.placeholder = '0';
-        o.optional = true;
-		
-		o = s.taboption('amneziawg', form.Value, 'awg_s4', _('S4'), _('Transport packet junk header size.'));
+        o = s.taboption('amneziawg', form.Value, 'awg_s2', _('S2'), _('Handshake response packet junk header size in bytes.'));
         o.datatype = 'uinteger';
         o.placeholder = '0';
         o.optional = true;
 
-        o = s.taboption('amneziawg', form.Value, 'awg_h1', _('H1'), _('Handshake initiation packet type header.'));
-        o.datatype = 'string';
+        o = s.taboption('amneziawg', form.Value, 'awg_s3', _('S3'), _('Cookie reply packet junk header size in bytes.'));
+        o.datatype = 'uinteger';
+        o.placeholder = '0';
+        o.optional = true;
+
+        o = s.taboption('amneziawg', form.Value, 'awg_s4', _('S4'), _('Transport packet junk header size in bytes.'));
+        o.datatype = 'uinteger';
+        o.placeholder = '0';
+        o.optional = true;
+
+        o = s.taboption('amneziawg', form.Value, 'awg_h1', _('H1'), _('Handshake initiation packet type header. Format: number (1) or range (123456-123500).'));
+        o.validate = validateRangedValue;
         o.placeholder = '1';
         o.optional = true;
 
-        o = s.taboption('amneziawg', form.Value, 'awg_h2', _('H2'), _('Handshake response packet type header.'));
-        o.datatype = 'string';
+        o = s.taboption('amneziawg', form.Value, 'awg_h2', _('H2'), _('Handshake response packet type header. Format: number (2) or range (123456-123500).'));
+        o.validate = validateRangedValue;
         o.placeholder = '2';
         o.optional = true;
 
-        o = s.taboption('amneziawg', form.Value, 'awg_h3', _('H3'), _('Handshake cookie packet type header.'));
-        o.datatype = 'string';
+        o = s.taboption('amneziawg', form.Value, 'awg_h3', _('H3'), _('Handshake cookie packet type header. Format: number (3) or range (123456-123500).'));
+        o.validate = validateRangedValue;
         o.placeholder = '3';
         o.optional = true;
 
-        o = s.taboption('amneziawg', form.Value, 'awg_h4', _('H4'), _('Transport packet type header.'));
-        o.datatype = 'string';
+        o = s.taboption('amneziawg', form.Value, 'awg_h4', _('H4'), _('Transport packet type header. Format: number (4) or range (123456-123500).'));
+        o.validate = validateRangedValue;
         o.placeholder = '4';
         o.optional = true;
 		
-		o = s.taboption('amneziawg', form.Value, 'awg_i1', _('I1'), _('First special junk packet signature.'));
+        o = s.taboption('amneziawg', form.Value, 'awg_i1', _('I1'), _('First special junk packet signature. Custom payload for packet obfuscation.'));
         o.datatype = 'string';
         o.optional = true;
-		
-		o = s.taboption('amneziawg', form.Value, 'awg_i2', _('I2'), _('Second special junk packet signature.'));
+
+        o = s.taboption('amneziawg', form.Value, 'awg_i2', _('I2'), _('Second special junk packet signature. Custom payload for packet obfuscation.'));
         o.datatype = 'string';
         o.optional = true;
-		
-		o = s.taboption('amneziawg', form.Value, 'awg_i3', _('I3'), _('Third special junk packet signature.'));
+
+        o = s.taboption('amneziawg', form.Value, 'awg_i3', _('I3'), _('Third special junk packet signature. Custom payload for packet obfuscation.'));
         o.datatype = 'string';
         o.optional = true;
-		
-		o = s.taboption('amneziawg', form.Value, 'awg_i4', _('I4'), _('Fourth special junk packet signature.'));
+
+        o = s.taboption('amneziawg', form.Value, 'awg_i4', _('I4'), _('Fourth special junk packet signature. Custom payload for packet obfuscation.'));
         o.datatype = 'string';
         o.optional = true;
-		
-		o = s.taboption('amneziawg', form.Value, 'awg_i5', _('I5'), _('Fifth special junk packet signature.'));
+
+        o = s.taboption('amneziawg', form.Value, 'awg_i5', _('I5'), _('Fifth special junk packet signature. Custom payload for packet obfuscation.'));
         o.datatype = 'string';
         o.optional = true;
 

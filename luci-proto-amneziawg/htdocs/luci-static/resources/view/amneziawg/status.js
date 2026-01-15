@@ -84,17 +84,49 @@ function renderPeerTable(instanceName, peers) {
 			_('Endpoint'),
 			_('Data Received'),
 			_('Data Transmitted'),
-			_('Latest Handshake')
+			_('Latest Handshake'),
+			_('Status')
 		],
 		{
 			id: 'peers-' + instanceName
 		},
 		E('em', [
-			_('No peers connected')
+			_('No peers configured')
 		])
 	);
 
 	t.update(peers.map(function(peer) {
+		var handshake = +peer.latest_handshake;
+		var now = Date.now() / 1000;
+		var idle = now - handshake;
+		var statusBadge;
+
+		// Determine connection status based on handshake time
+		if (handshake < 1) {
+			statusBadge = E('span', {
+				'class': 'ifacebadge',
+				'style': 'background-color: #ccc; color: #444;'
+			}, [ _('Never') ]);
+		} else if (idle < 180) {
+			// Connected (handshake within 3 minutes)
+			statusBadge = E('span', {
+				'class': 'ifacebadge',
+				'style': 'background-color: #28a745; color: white;'
+			}, [ _('Connected') ]);
+		} else if (idle < 600) {
+			// Warning (handshake 3-10 minutes ago)
+			statusBadge = E('span', {
+				'class': 'ifacebadge',
+				'style': 'background-color: #ffc107; color: #333;'
+			}, [ _('Idle') ]);
+		} else {
+			// Disconnected (handshake > 10 minutes ago)
+			statusBadge = E('span', {
+				'class': 'ifacebadge',
+				'style': 'background-color: #dc3545; color: white;'
+			}, [ _('Disconnected') ]);
+		}
+
 		return [
 			[
 				peer.name || '',
@@ -113,10 +145,11 @@ function renderPeerTable(instanceName, peers) {
 					])
 				])
 			],
-			peer.endpoint,
+			peer.endpoint || E('em', [ _('None') ]),
 			[ +peer.transfer_rx, '%1024mB'.format(+peer.transfer_rx) ],
 			[ +peer.transfer_tx, '%1024mB'.format(+peer.transfer_tx) ],
-			[ +peer.latest_handshake, timestampToStr(+peer.latest_handshake) ]
+			[ +peer.latest_handshake, timestampToStr(+peer.latest_handshake) ],
+			[ handshake, statusBadge ]
 		];
 	}));
 
