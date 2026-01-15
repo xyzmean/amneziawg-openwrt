@@ -36,6 +36,11 @@ fi
 	. /lib/functions.sh
 	. ../netifd-proto.sh
 	init_proto "$@"
+
+	# Load WARP helper if available
+	if [ -f /usr/libexec/amneziawg/warp-helper.sh ]; then
+		. /usr/libexec/amneziawg/warp-helper.sh
+	fi
 }
 
 proto_amneziawg_init_config() {
@@ -59,6 +64,7 @@ proto_amneziawg_init_config() {
 	proto_config_add_string "awg_i3"
 	proto_config_add_string "awg_i4"
 	proto_config_add_string "awg_i5"
+	proto_config_add_bool "use_warp"
 # shellcheck disable=SC2034
 	available=1
 # shellcheck disable=SC2034
@@ -194,6 +200,9 @@ proto_amneziawg_setup() {
 	local awg_h1 awg_h2 awg_h3 awg_h4
 	local awg_i1 awg_i2 awg_i3 awg_i4 awg_i5
 
+	# WARP parameters
+	local use_warp
+
 	ensure_key_is_generated "${config}"
 
 	config_load network
@@ -205,6 +214,7 @@ proto_amneziawg_setup() {
 	config_get ip6prefix "${config}" "ip6prefix"
 	config_get nohostroute "${config}" "nohostroute"
 	config_get tunlink "${config}" "tunlink"
+	config_get_bool use_warp "${config}" "use_warp" 0
 
 	# Load AmneziaWG parameters
 	config_get awg_jc "${config}" "awg_jc"
@@ -233,6 +243,21 @@ proto_amneziawg_setup() {
 		log_info "using user-space amneziawg-go for ${config}"
 		rm -f "/var/run/amneziawg/${config}.sock"
 		amneziawg-go "${config}"
+	fi
+
+	# Apply WARP configuration if enabled
+	if [ "${use_warp}" -eq 1 ]; then
+		log_info "WARP mode enabled for ${config}"
+
+		# Override private_key from wgcf if available
+		if command -v wgcf-wrapper >/dev/null 2>&1; then
+			local warp_private_key
+			warp_private_key=$(wgcf-wrapper extract_private_key 2>/dev/null)
+			if [ -n "$warp_private_key" ]; then
+				private_key="$warp_private_key"
+				log_info "Using WARP private key"
+			fi
+		fi
 	fi
 
 	# Set MTU if specified
@@ -275,6 +300,34 @@ proto_amneziawg_setup() {
 	_add_cfg "I3" "${awg_i3}"
 	_add_cfg "I4" "${awg_i4}"
 	_add_cfg "I5" "${awg_i5}"
+
+	# Add WARP peer if enabled
+	if [ "${use_warp}" -eq 1 ]; then
+		log_info "Adding WARP peer configuration"
+
+		local warp_public_key warp_endpoint
+
+		if command -v wgcf-wrapper >/dev/null 2>&1; then
+			warp_public_key=$(wgcf-wrapper extract_public_key 2>/dev/null)
+			warp_endpoint=$(wgcf-wrapper extract_endpoint 2>/dev/null)
+
+			if [ -n "$warp_public_key" ] && [ -n "$warp_endpoint" ]; then
+				echo "[Peer]" >> "${awg_cfg}"
+				echo "PublicKey=${warp_public_key}" >> "${awg_cfg}"
+				echo "Endpoint=${warp_endpoint}" >> "${awg_cfg}"
+				echo "AllowedIPs=0.0.0.0/0,::/0" >> "${awg_cfg}"
+				echo "PersistentKeepalive=25" >> "${awg_cfg}"
+
+				# Add routes for full tunnel
+				proto_add_ipv4_route "0.0.0.0" "0"
+				proto_add_ipv6_route "::" "0"
+
+				log_info "WARP peer added successfully"
+			else
+				log_error "Failed to extract WARP peer information"
+			fi
+		fi
+	fi
 
 	# Add peer configurations
 	config_foreach proto_amneziawg_setup_peer "amneziawg_${config}"

@@ -204,6 +204,28 @@ var AWG_PRESETS = {
 			awg_i2: 'advanced_obfs_2',
 			awg_i3: 'advanced_obfs_3'
 		}
+	},
+	warp: {
+		name: _('Cloudflare WARP'),
+		description: _('Optimized for Cloudflare WARP with enhanced obfuscation'),
+		values: {
+			awg_jc: '7',
+			awg_jmin: '15',
+			awg_jmax: '35',
+			awg_s1: '25',
+			awg_s2: '35',
+			awg_s3: '15',
+			awg_s4: '20',
+			awg_h1: '162000-162500',
+			awg_h2: '262000-262500',
+			awg_h3: '362000-362500',
+			awg_h4: '462000-462500',
+			awg_i1: '150',
+			awg_i2: '200',
+			awg_i3: '250',
+			awg_i4: '300',
+			awg_i5: '350'
+		}
 	}
 };
 
@@ -275,6 +297,10 @@ return network.registerProtocol('amneziawg', {
 		o.datatype = 'ipaddr';
 		o.optional = true;
 
+		o = s.taboption('general', form.Flag, 'use_warp', _('Use Cloudflare WARP'),
+			_('Enable Cloudflare WARP mode. When enabled, the interface will use WARP endpoint and automatically configure peer settings. Requires wgcf binary installed.'));
+		o.optional = true;
+
 		o = s.taboption('general', form.Flag, 'nohostroute', _('No Host Routes'), _('Optional. Do not create host routes to peers.'));
 		o.optional = true;
 
@@ -315,6 +341,7 @@ return network.registerProtocol('amneziawg', {
         o.value('light', AWG_PRESETS.light.name);
         o.value('medium', AWG_PRESETS.medium.name);
         o.value('heavy', AWG_PRESETS.heavy.name);
+        o.value('warp', AWG_PRESETS.warp.name);
         o.default = 'none';
         o.optional = true;
         o.write = function(section_id, value) {

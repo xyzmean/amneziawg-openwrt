@@ -4,7 +4,9 @@
 		"read": {
 			"ubus": {
 				"luci.amneziawg": [
-					"getAwgInstances"
+					"getAwgInstances",
+					"getWarpStatus",
+					"getWarpAccountInfo"
 				]
 			},
 			"uci": [ "ddns", "system", "network" ]
@@ -14,7 +16,9 @@
 				"luci.amneziawg": [
 					"generateKeyPair",
 					"getPublicAndPrivateKeyFromPrivate",
-					"generatePsk"
+					"generatePsk",
+					"registerWarpAccount",
+					"regenerateWarpConfig"
 				]
 			}
 		}
