@@ -1,1 +1,4 @@
 .idea/
+
+# Upstream dependencies (для разработки)
+deps/

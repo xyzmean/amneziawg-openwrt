@@ -112,7 +112,6 @@ function generateDescription(name, texts) {
 }
 
 function buildSVGQRCode(data, code) {
-	// pixel size larger than 4 clips right and bottom edges of complex configs
 	const options = {
 		pixelSize: 4,
 		whiteColor: 'white',
@@ -145,6 +144,68 @@ var cbiKeyPairGenerate = form.DummyValue.extend({
 function handleWindowDragDropIgnore(ev) {
 	ev.preventDefault()
 }
+
+// Presets for common AmneziaWG configurations
+var AWG_PRESETS = {
+	none: {
+		name: _('No Obfuscation'),
+		description: _('Standard WireGuard protocol without obfuscation'),
+		values: {}
+	},
+	light: {
+		name: _('Light Obfuscation'),
+		description: _('Basic obfuscation for bypassing simple DPI'),
+		values: {
+			awg_jc: '5',
+			awg_jmin: '10',
+			awg_jmax: '20',
+			awg_s1: '20',
+			awg_s2: '30',
+			awg_h1: '123456-123500',
+			awg_h2: '223456-223500',
+			awg_h3: '323456-323500',
+			awg_h4: '423456-423500'
+		}
+	},
+	medium: {
+		name: _('Medium Obfuscation'),
+		description: _('Moderate obfuscation for better bypass capabilities'),
+		values: {
+			awg_jc: '10',
+			awg_jmin: '20',
+			awg_jmax: '40',
+			awg_s1: '40',
+			awg_s2: '50',
+			awg_s3: '30',
+			awg_s4: '40',
+			awg_h1: '123456-123500',
+			awg_h2: '223456-223500',
+			awg_h3: '323456-323500',
+			awg_h4: '423456-423500',
+			awg_i1: 'random_string_1'
+		}
+	},
+	heavy: {
+		name: _('Heavy Obfuscation'),
+		description: _('Maximum obfuscation for advanced DPI bypass'),
+		values: {
+			awg_jc: '20',
+			awg_jmin: '40',
+			awg_jmax: '80',
+			awg_s1: '60',
+			awg_s2: '70',
+			awg_s3: '50',
+			awg_s4: '60',
+			awg_h1: '100000-100500',
+			awg_h2: '200000-200500',
+			awg_h3: '300000-300500',
+			awg_h4: '400000-400500',
+			awg_i1: 'advanced_obfs_1',
+			awg_i2: 'advanced_obfs_2',
+			awg_i3: 'advanced_obfs_3'
+		}
+	}
+};
 
 return network.registerProtocol('amneziawg', {
 	getI18n: function() {
@@ -200,7 +261,7 @@ return network.registerProtocol('amneziawg', {
 				},
 				function(error) {
 					return _('Error getting PublicKey');
-			}, this)
+				}, this)
 		};
 
 		s.taboption('general', cbiKeyPairGenerate, '_gen_server_keypair', ' ');
@@ -242,92 +303,156 @@ return network.registerProtocol('amneziawg', {
 		o = s.taboption('advanced', form.DynamicList, 'ip6prefix', _('IPv6 routed prefix'), _('This is the prefix routed to you by your provider for use by clients'));
 		o.datatype = 'cidr6';
 
-        // AmneziaWG
-
+        // AmneziaWG Settings Tab
         try {
-            s.tab('amneziawg', _('AmneziaWG Settings'), _('Further information about AmneziaWG interfaces and peers at <a href=\'https://docs.amnezia.org/documentation/amnezia-wg\'>amnezia.org</a>.'));
+            s.tab('amneziawg', _('AmneziaWG Settings'), _('Configure AmneziaWG v2.0 protocol parameters for obfuscation and anti-DPI.'));
         }
         catch(e) {}
 
-        o = s.taboption('amneziawg', form.Value, 'awg_jc', _('Jc'), _('Junk packet count. Number of junk packets to send with each real packet.'));
+        // Preset Selector
+        o = s.taboption('amneziawg', form.ListValue, '_preset', _('Configuration Preset'), _('Select a preset configuration for common use cases. You can fine-tune parameters below.'));
+        o.value('none', AWG_PRESETS.none.name);
+        o.value('light', AWG_PRESETS.light.name);
+        o.value('medium', AWG_PRESETS.medium.name);
+        o.value('heavy', AWG_PRESETS.heavy.name);
+        o.default = 'none';
+        o.optional = true;
+        o.write = function(section_id, value) {
+			// Apply preset values
+			var preset = AWG_PRESETS[value];
+			if (preset && preset.values) {
+				for (var key in preset.values) {
+					var opt = s.getOption(key.replace('awg_', ''));
+					if (opt) {
+						var uiEl = opt.getUIElement(section_id);
+						if (uiEl) {
+							uiEl.setValue(preset.values[key]);
+						}
+					}
+				}
+			}
+		};
+
+        // Junk Packet Parameters
+        try {
+            s.taboption('amneziawg', form.Section, '_junk_params', _('Junk Packet Parameters'),
+                _('Configure junk packets for traffic obfuscation. These parameters add fake packets to mask real traffic.'));
+        } catch(e) {}
+
+        o = s.taboption('amneziawg', form.Value, 'awg_jc', _('Jc'),
+            _('Junk packet count. Number of junk packets to send with each real packet. Higher values = more obfuscation but more overhead.'));
+        o.datatype = 'uinteger';
+        o.placeholder = '0';
+        o.optional = true;
+        o.depends('_preset', 'none');
+
+        o = s.taboption('amneziawg', form.Value, 'awg_jmin', _('Jmin'),
+            _('Junk packet minimum size in bytes. Must be less than or equal to Jmax.'));
         o.datatype = 'uinteger';
         o.placeholder = '0';
         o.optional = true;
 
-        o = s.taboption('amneziawg', form.Value, 'awg_jmin', _('Jmin'), _('Junk packet minimum size in bytes. Must be less than or equal to Jmax.'));
+        o = s.taboption('amneziawg', form.Value, 'awg_jmax', _('Jmax'),
+            _('Junk packet maximum size in bytes. Must be greater than or equal to Jmin.'));
         o.datatype = 'uinteger';
         o.placeholder = '0';
         o.optional = true;
 
-        o = s.taboption('amneziawg', form.Value, 'awg_jmax', _('Jmax'), _('Junk packet maximum size in bytes. Must be greater than or equal to Jmin.'));
+        // Header Masking Parameters
+        try {
+            s.taboption('amneziawg', form.Section, '_header_params', _('Header Masking Parameters'),
+                _('Configure packet header sizes for different packet types during handshake and transport.'));
+        } catch(e) {}
+
+        o = s.taboption('amneziawg', form.Value, 'awg_s1', _('S1'),
+            _('Handshake initiation packet junk header size in bytes.'));
         o.datatype = 'uinteger';
         o.placeholder = '0';
         o.optional = true;
 
-        o = s.taboption('amneziawg', form.Value, 'awg_s1', _('S1'), _('Handshake initiation packet junk header size in bytes.'));
+        o = s.taboption('amneziawg', form.Value, 'awg_s2', _('S2'),
+            _('Handshake response packet junk header size in bytes.'));
         o.datatype = 'uinteger';
         o.placeholder = '0';
         o.optional = true;
 
-        o = s.taboption('amneziawg', form.Value, 'awg_s2', _('S2'), _('Handshake response packet junk header size in bytes.'));
+        o = s.taboption('amneziawg', form.Value, 'awg_s3', _('S3'),
+            _('Cookie reply packet junk header size in bytes.'));
         o.datatype = 'uinteger';
         o.placeholder = '0';
         o.optional = true;
 
-        o = s.taboption('amneziawg', form.Value, 'awg_s3', _('S3'), _('Cookie reply packet junk header size in bytes.'));
+        o = s.taboption('amneziawg', form.Value, 'awg_s4', _('S4'),
+            _('Transport packet junk header size in bytes.'));
         o.datatype = 'uinteger';
         o.placeholder = '0';
         o.optional = true;
 
-        o = s.taboption('amneziawg', form.Value, 'awg_s4', _('S4'), _('Transport packet junk header size in bytes.'));
-        o.datatype = 'uinteger';
-        o.placeholder = '0';
-        o.optional = true;
+        // Packet Type Headers
+        try {
+            s.taboption('amneziawg', form.Section, '_type_headers', _('Packet Type Headers'),
+                _('Configure packet type headers. Use single values (e.g., 1) or ranges (e.g., 123456-123500) for randomization.'));
+        } catch(e) {}
 
-        o = s.taboption('amneziawg', form.Value, 'awg_h1', _('H1'), _('Handshake initiation packet type header. Format: number (1) or range (123456-123500).'));
+        o = s.taboption('amneziawg', form.Value, 'awg_h1', _('H1'),
+            _('Handshake initiation packet type header. Format: number (1) or range (123456-123500).'));
         o.validate = validateRangedValue;
         o.placeholder = '1';
         o.optional = true;
 
-        o = s.taboption('amneziawg', form.Value, 'awg_h2', _('H2'), _('Handshake response packet type header. Format: number (2) or range (123456-123500).'));
+        o = s.taboption('amneziawg', form.Value, 'awg_h2', _('H2'),
+            _('Handshake response packet type header. Format: number (2) or range (123456-123500).'));
         o.validate = validateRangedValue;
         o.placeholder = '2';
         o.optional = true;
 
-        o = s.taboption('amneziawg', form.Value, 'awg_h3', _('H3'), _('Handshake cookie packet type header. Format: number (3) or range (123456-123500).'));
+        o = s.taboption('amneziawg', form.Value, 'awg_h3', _('H3'),
+            _('Handshake cookie packet type header. Format: number (3) or range (123456-123500).'));
         o.validate = validateRangedValue;
         o.placeholder = '3';
         o.optional = true;
 
-        o = s.taboption('amneziawg', form.Value, 'awg_h4', _('H4'), _('Transport packet type header. Format: number (4) or range (123456-123500).'));
+        o = s.taboption('amneziawg', form.Value, 'awg_h4', _('H4'),
+            _('Transport packet type header. Format: number (4) or range (123456-123500).'));
         o.validate = validateRangedValue;
         o.placeholder = '4';
         o.optional = true;
-		
-        o = s.taboption('amneziawg', form.Value, 'awg_i1', _('I1'), _('First special junk packet signature. Custom payload for packet obfuscation.'));
+
+        // Special Junk Signatures
+        try {
+            s.taboption('amneziawg', form.Section, '_special_sigs', _('Special Junk Signatures'),
+                _('Custom payload signatures for additional packet obfuscation. Leave empty for default behavior.'));
+        } catch(e) {}
+
+        o = s.taboption('amneziawg', form.Value, 'awg_i1', _('I1'),
+            _('First special junk packet signature. Custom payload for packet obfuscation.'));
         o.datatype = 'string';
         o.optional = true;
 
-        o = s.taboption('amneziawg', form.Value, 'awg_i2', _('I2'), _('Second special junk packet signature. Custom payload for packet obfuscation.'));
+        o = s.taboption('amneziawg', form.Value, 'awg_i2', _('I2'),
+            _('Second special junk packet signature. Custom payload for packet obfuscation.'));
         o.datatype = 'string';
         o.optional = true;
 
-        o = s.taboption('amneziawg', form.Value, 'awg_i3', _('I3'), _('Third special junk packet signature. Custom payload for packet obfuscation.'));
+        o = s.taboption('amneziawg', form.Value, 'awg_i3', _('I3'),
+            _('Third special junk packet signature. Custom payload for packet obfuscation.'));
         o.datatype = 'string';
         o.optional = true;
 
-        o = s.taboption('amneziawg', form.Value, 'awg_i4', _('I4'), _('Fourth special junk packet signature. Custom payload for packet obfuscation.'));
+        o = s.taboption('amneziawg', form.Value, 'awg_i4', _('I4'),
+            _('Fourth special junk packet signature. Custom payload for packet obfuscation.'));
         o.datatype = 'string';
         o.optional = true;
 
-        o = s.taboption('amneziawg', form.Value, 'awg_i5', _('I5'), _('Fifth special junk packet signature. Custom payload for packet obfuscation.'));
+        o = s.taboption('amneziawg', form.Value, 'awg_i5', _('I5'),
+            _('Fifth special junk packet signature. Custom payload for packet obfuscation.'));
         o.datatype = 'string';
         o.optional = true;
 
 		// -- peers -----------------------------------------------------------------------
 
 		try {
-			s.tab('peers', _('Peers'), _('Further information about AmneziaWG interfaces and peers at <a href=\'https://docs.amnezia.org/documentation/amnezia-wg\'>amnezia.org</a>.'));
+			s.tab('peers', _('Peers'), _('Manage AmneziaWG peers. Each peer represents a remote endpoint.'));
 		}
 		catch(e) {}
 
@@ -912,10 +1037,10 @@ return network.registerProtocol('amneziawg', {
 				});
 
 				for (var i = 0; i < data[0].length; i++)
-					hostnames.push.apply(hostnames, data[0][i].getIPAddrs().map(function(ip) { return ip.split('/')[0] }));
+					hostnames.push.apply(hostnames, data[0][i].getIPAddrs().map(function(ip) { return ip.split('/')[0]; }));
 
 				for (var i = 0; i < data[1].length; i++)
-					hostnames.push.apply(hostnames, data[1][i].getIP6Addrs().map(function(ip) { return ip.split('/')[0] }));
+					hostnames.push.apply(hostnames, data[1][i].getIP6Addrs().map(function(ip) { return ip.split('/')[0]; }));
 
 				var ips = [ '0.0.0.0/0', '::/0' ];
 
